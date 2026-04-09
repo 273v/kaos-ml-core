@@ -1,0 +1,40 @@
+# Rust build artifacts
+/target/
+Cargo.lock
+
+# Maturin compiled extension (built by `maturin develop`)
+python/kaos_ml_core/_rust.cpython-*.so
+python/kaos_ml_core/_rust.abi3.so
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.so
+*.dylib
+*.pyd
+dist/
+build/
+*.whl
+
+# Virtual environments
+/.venv/
+venv/
+
+# uv lockfile (pinned per-developer; not committed for editable workspace pkgs)
+uv.lock
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store

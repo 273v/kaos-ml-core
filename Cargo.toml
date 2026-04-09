@@ -1,0 +1,35 @@
+[package]
+name = "kaos-ml-core"
+version = "0.1.0"
+edition = "2021"
+license = "LicenseRef-Proprietary"
+authors = ["273 Ventures LLC <it@273ventures.com>"]
+description = "Classical ML primitives for the Kelvin Agentic OS"
+rust-version = "1.83"
+
+[lib]
+name = "_rust"
+path = "rust/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["python"]
+python = ["pyo3"]
+
+# All deps reused from the existing kaos-nlp-core / kaos-graph dep budget.
+# Zero net new dependencies — anything beyond this set must be justified
+# by measured profiling and documented in the PRD.
+[dependencies]
+pyo3 = { version = "0.28", features = ["extension-module"], optional = true }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+ahash = { version = "0.8", features = ["serde"] }
+rayon = "1.10"
+# simsimd = "6.5"  # uncomment when v2.0+ adds a SIMD cosine/dot/L2 hot path
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+strip = "symbols"
