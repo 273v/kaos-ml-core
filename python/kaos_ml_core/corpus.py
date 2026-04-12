@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from kaos_ml_core.errors import CorpusError
 
@@ -281,6 +281,38 @@ class Corpus:
     def units_for_doc(self, doc_uri: str) -> list[int]:
         """Return all row indices whose units came from the given doc URI."""
         return [u.row for u in self._units if u.doc_uri == doc_uri]
+
+    # ── Embedding cache ────────────────────────────────────────────────
+
+    _embeddings: Any = None  # np.ndarray | None, typed as Any to avoid numpy import
+
+    def embed(
+        self,
+        *,
+        model: str | None = None,
+        batch_size: int = 32,
+    ) -> Any:
+        """Return a dense embedding matrix for this Corpus, caching the result.
+
+        Uses ``kaos_ml_core.features.embed_corpus`` on first call and
+        caches the result so subsequent calls (or
+        ``EmbeddingRetriever.from_corpus``) can reuse the embeddings
+        without re-running the model.
+
+        Args:
+            model: Embedding model id.  Defaults to the registry
+                default (``BAAI/bge-small-en-v1.5``).
+            batch_size: Inference batch size.
+
+        Returns:
+            A float32 numpy array of shape ``(len(self), dim)``.
+            Row ``i`` is the embedding for ``self.unit(i).text``.
+        """
+        if self._embeddings is None:
+            from kaos_ml_core.features import embed_corpus
+
+            self._embeddings = embed_corpus(self, model=model, batch_size=batch_size)
+        return self._embeddings
 
     # ── TabularDocument bridge ─────────────────────────────────────────
 
