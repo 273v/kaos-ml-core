@@ -254,6 +254,84 @@ class Corpus:
             },
         )
 
+    def extend(
+        self,
+        documents: Iterable[ContentDocument],
+        *,
+        level: str | None = None,
+        doc_uris: Iterable[str | None] | None = None,
+    ) -> Corpus:
+        """Return a new Corpus with additional documents appended.
+
+        The existing units are preserved with their original row indices.
+        New units are assigned dense row indices starting after the last
+        existing unit. Embedding and retriever caches are NOT carried
+        over (they must be recomputed for the extended corpus).
+
+        Args:
+            documents: New ContentDocument(s) to append.
+            level: Granularity for new documents. Defaults to the level
+                this Corpus was built with (from corpus_metadata).
+            doc_uris: Optional per-document URI overrides for new docs.
+
+        Returns:
+            A new ``Corpus`` instance containing all existing units
+            plus units from the new documents.
+        """
+        from kaos_content.units import (
+            iter_paragraph_units,
+            iter_sentence_units,
+        )
+
+        effective_level = level or self._corpus_metadata.get("level", "paragraph")
+        docs = list(documents)
+        if not docs:
+            return self
+
+        uris: list[str | None] = list(doc_uris) if doc_uris is not None else [None] * len(docs)
+        if len(uris) != len(docs):
+            msg = f"doc_uris length ({len(uris)}) must match documents length ({len(docs)})"
+            raise CorpusError(msg)
+
+        new_units: list[CorpusUnit] = list(self._units)
+        global_row = len(self._units)
+
+        for doc, override_uri in zip(docs, uris, strict=True):
+            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
+            local_units = (
+                iter_paragraph_units(doc)
+                if effective_level == "paragraph"
+                else iter_sentence_units(doc)
+            )
+            for lu in local_units:
+                new_units.append(
+                    CorpusUnit(
+                        row=global_row,
+                        text=lu.text,
+                        block_ref=lu.block_ref,
+                        doc_uri=doc_uri,
+                        page=lu.page,
+                        section_ref=lu.section_ref,
+                        section_title=lu.section_title,
+                    )
+                )
+                global_row += 1
+
+        # Collect unique doc URIs
+        seen_uris: dict[str, None] = {}
+        for u in new_units:
+            seen_uris[u.doc_uri] = None
+
+        return Corpus(
+            new_units,
+            corpus_metadata={
+                "level": effective_level,
+                "doc_count": self._corpus_metadata.get("doc_count", 0) + len(docs),
+                "unit_count": len(new_units),
+                "doc_uris": list(seen_uris),
+            },
+        )
+
     # ── Bidirectional row ↔ block_ref mapping ──────────────────────────
 
     def __len__(self) -> int:
@@ -322,6 +400,7 @@ class Corpus:
         *,
         model: str | None = None,
         batch_size: int = 32,
+        cache_dir: str | None = None,
     ) -> Any:
         """Return a dense embedding matrix for this Corpus, caching the result.
 
@@ -330,23 +409,71 @@ class Corpus:
         with the **same** parameters return the cached result.  Calls
         with **different** parameters compute and cache separately.
 
+        When ``cache_dir`` is set, embeddings are also persisted to
+        disk as numpy ``.npy`` files keyed by a hash of the corpus
+        content and model id. On subsequent calls (even across
+        processes), the cached file is loaded instead of recomputing.
+
         Args:
             model: Embedding model id.  Defaults to the registry
                 default (``BAAI/bge-small-en-v1.5``).
             batch_size: Inference batch size.
+            cache_dir: Directory for persistent embedding cache.
+                ``None`` (default) disables disk caching.
 
         Returns:
             A float32 numpy array of shape ``(len(self), dim)``.
             Row ``i`` is the embedding for ``self.unit(i).text``.
         """
         cache_key = (model, batch_size)
-        if cache_key not in self._embedding_cache:
-            from kaos_ml_core.features import embed_corpus
+        if cache_key in self._embedding_cache:
+            return self._embedding_cache[cache_key]
 
-            self._embedding_cache[cache_key] = embed_corpus(
-                self, model=model, batch_size=batch_size
-            )
-        return self._embedding_cache[cache_key]
+        # Try loading from persistent cache
+        if cache_dir is not None:
+            disk_path = self._embedding_disk_path(cache_dir, model)
+            if disk_path.exists():
+                import numpy as np
+
+                vecs = np.load(disk_path)
+                if vecs.shape[0] == len(self):
+                    self._embedding_cache[cache_key] = vecs
+                    return vecs
+                # Shape mismatch — corpus changed, recompute
+
+        from kaos_ml_core.features import embed_corpus
+
+        vecs = embed_corpus(self, model=model, batch_size=batch_size)
+        self._embedding_cache[cache_key] = vecs
+
+        # Persist to disk
+        if cache_dir is not None:
+            import numpy as np
+
+            disk_path = self._embedding_disk_path(cache_dir, model)
+            disk_path.parent.mkdir(parents=True, exist_ok=True)
+            np.save(disk_path, vecs)
+
+        return vecs
+
+    def _embedding_disk_path(self, cache_dir: str, model: str | None) -> Any:
+        """Build the disk cache file path for embeddings."""
+        from pathlib import Path
+
+        content_hash = self._content_hash()
+        model_key = (model or "default").replace("/", "_")
+        return Path(cache_dir) / f"embed_{model_key}_{content_hash}.npy"
+
+    def _content_hash(self) -> str:
+        """Compute a stable hash of the corpus content for cache keying."""
+        import hashlib
+
+        h = hashlib.sha256()
+        for u in self._units:
+            h.update(u.text.encode("utf-8"))
+            h.update(u.doc_uri.encode("utf-8"))
+            h.update(u.block_ref.encode("utf-8"))
+        return h.hexdigest()[:16]
 
     # ── Retriever factory (multi-level, cached) ────────────────────────
 
