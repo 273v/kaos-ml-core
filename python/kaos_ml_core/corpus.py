@@ -116,7 +116,12 @@ class Corpus:
                 raise CorpusError(msg)
 
         self._units: tuple[CorpusUnit, ...] = tuple(units)
-        self._corpus_metadata: dict[str, Any] = corpus_metadata or {}
+        self._corpus_metadata: dict[str, Any] = dict(corpus_metadata) if corpus_metadata else {}
+        # Caches — instance-level, NOT class-level.  Populated lazily
+        # by embed() and retriever().  Keyed by parameters so different
+        # models / kwargs produce distinct cached entries.
+        self._embedding_cache: dict[tuple[str | None, int], Any] = {}
+        self._retriever_cache: dict[tuple, Any] = {}
         # First-row index per block_ref. For sentence-level corpora,
         # multiple sentences share one paragraph block_ref; row_for
         # returns the first; rows_for returns all.
@@ -234,13 +239,18 @@ class Corpus:
                 )
                 global_row += 1
 
+        # Collect unique doc URIs in insertion order.
+        seen_uris: dict[str, None] = {}
+        for u in units:
+            seen_uris[u.doc_uri] = None
+
         return cls(
             units,
             corpus_metadata={
                 "level": level,
                 "doc_count": len(docs),
                 "unit_count": len(units),
-                "doc_uris": [u.doc_uri for u in units[:1]] if units else [],
+                "doc_uris": list(seen_uris),
             },
         )
 
@@ -254,8 +264,12 @@ class Corpus:
 
     @property
     def corpus_metadata(self) -> dict[str, Any]:
-        """Corpus-level metadata (level, doc_count, chunk_config, etc.)."""
-        return self._corpus_metadata
+        """Corpus-level metadata (level, doc_count, chunk_config, etc.).
+
+        Returns a **copy** so external mutation does not affect the
+        Corpus's internal state.
+        """
+        return dict(self._corpus_metadata)
 
     @property
     def units(self) -> tuple[CorpusUnit, ...]:
@@ -303,8 +317,6 @@ class Corpus:
 
     # ── Embedding cache ────────────────────────────────────────────────
 
-    _embeddings: Any = None  # np.ndarray | None, typed as Any to avoid numpy import
-
     def embed(
         self,
         *,
@@ -313,10 +325,10 @@ class Corpus:
     ) -> Any:
         """Return a dense embedding matrix for this Corpus, caching the result.
 
-        Uses ``kaos_ml_core.features.embed_corpus`` on first call and
-        caches the result so subsequent calls (or
-        ``EmbeddingRetriever.from_corpus``) can reuse the embeddings
-        without re-running the model.
+        Uses ``kaos_ml_core.features.embed_corpus`` on first call for
+        each ``(model, batch_size)`` combination.  Subsequent calls
+        with the **same** parameters return the cached result.  Calls
+        with **different** parameters compute and cache separately.
 
         Args:
             model: Embedding model id.  Defaults to the registry
@@ -327,15 +339,16 @@ class Corpus:
             A float32 numpy array of shape ``(len(self), dim)``.
             Row ``i`` is the embedding for ``self.unit(i).text``.
         """
-        if self._embeddings is None:
+        cache_key = (model, batch_size)
+        if cache_key not in self._embedding_cache:
             from kaos_ml_core.features import embed_corpus
 
-            self._embeddings = embed_corpus(self, model=model, batch_size=batch_size)
-        return self._embeddings
+            self._embedding_cache[cache_key] = embed_corpus(
+                self, model=model, batch_size=batch_size
+            )
+        return self._embedding_cache[cache_key]
 
     # ── Retriever factory (multi-level, cached) ────────────────────────
-
-    _retriever_cache: dict[tuple[str, str | None], Any] | None = None
 
     def retriever(
         self,
@@ -344,7 +357,7 @@ class Corpus:
         group_by: str | None = None,
         **kwargs: Any,
     ) -> Any:
-        """Get a ``Retriever`` for this Corpus, cached by (method, group_by).
+        """Get a ``Retriever`` for this Corpus, cached by (method, group_by, kwargs).
 
         Supports coarse-to-fine retrieval: build a section-level
         retriever AND a paragraph-level retriever from the same Corpus
@@ -358,10 +371,13 @@ class Corpus:
                 or sentence-level (whatever level the Corpus was built
                 with).
             **kwargs: Forwarded to the retriever's ``from_corpus()``.
+                Included in the cache key — different kwargs produce
+                separate cached retrievers.
 
         Returns:
-            A ``Retriever`` protocol instance.  Cached: calling
-            ``corpus.retriever("bm25")`` twice returns the same object.
+            A ``Retriever`` protocol instance.  Cached: calling with
+            the same ``(method, group_by, **kwargs)`` returns the
+            same object.
 
         Example — coarse-to-fine::
 
@@ -373,10 +389,10 @@ class Corpus:
             ValueError: On unknown method.
             ImportError: If the required package is not installed.
         """
-        if self._retriever_cache is None:
-            self._retriever_cache = {}
-
-        cache_key = (method, group_by)
+        # Include kwargs in cache key so different parameters produce
+        # distinct retrievers.  Freeze kwargs to a hashable tuple.
+        frozen_kwargs = tuple(sorted(kwargs.items())) if kwargs else ()
+        cache_key = (method, group_by, frozen_kwargs)
         if cache_key in self._retriever_cache:
             return self._retriever_cache[cache_key]
 
