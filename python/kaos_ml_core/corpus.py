@@ -88,7 +88,12 @@ class Corpus:
     sentence-level granularity.
     """
 
-    def __init__(self, units: Sequence[CorpusUnit]) -> None:
+    def __init__(
+        self,
+        units: Sequence[CorpusUnit],
+        *,
+        corpus_metadata: dict[str, Any] | None = None,
+    ) -> None:
         if not units:
             msg = (
                 "Corpus is empty. "
@@ -111,6 +116,7 @@ class Corpus:
                 raise CorpusError(msg)
 
         self._units: tuple[CorpusUnit, ...] = tuple(units)
+        self._corpus_metadata: dict[str, Any] = corpus_metadata or {}
         # First-row index per block_ref. For sentence-level corpora,
         # multiple sentences share one paragraph block_ref; row_for
         # returns the first; rows_for returns all.
@@ -228,7 +234,15 @@ class Corpus:
                 )
                 global_row += 1
 
-        return cls(units)
+        return cls(
+            units,
+            corpus_metadata={
+                "level": level,
+                "doc_count": len(docs),
+                "unit_count": len(units),
+                "doc_uris": [u.doc_uri for u in units[:1]] if units else [],
+            },
+        )
 
     # ── Bidirectional row ↔ block_ref mapping ──────────────────────────
 
@@ -237,6 +251,11 @@ class Corpus:
 
     def __iter__(self) -> Iterator[CorpusUnit]:
         return iter(self._units)
+
+    @property
+    def corpus_metadata(self) -> dict[str, Any]:
+        """Corpus-level metadata (level, doc_count, chunk_config, etc.)."""
+        return self._corpus_metadata
 
     @property
     def units(self) -> tuple[CorpusUnit, ...]:
