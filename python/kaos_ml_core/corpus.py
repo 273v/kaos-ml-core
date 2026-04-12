@@ -24,7 +24,7 @@ exactly one source of truth for "what counts as a row."
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -235,7 +235,7 @@ class Corpus:
     def __len__(self) -> int:
         return len(self._units)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[CorpusUnit]:
         return iter(self._units)
 
     @property
@@ -313,6 +313,81 @@ class Corpus:
 
             self._embeddings = embed_corpus(self, model=model, batch_size=batch_size)
         return self._embeddings
+
+    # ── Retriever factory (multi-level, cached) ────────────────────────
+
+    _retriever_cache: dict[tuple[str, str | None], Any] | None = None
+
+    def retriever(
+        self,
+        method: str = "bm25",
+        *,
+        group_by: str | None = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Get a ``Retriever`` for this Corpus, cached by (method, group_by).
+
+        Supports coarse-to-fine retrieval: build a section-level
+        retriever AND a paragraph-level retriever from the same Corpus
+        without rebuilding or re-embedding.
+
+        Args:
+            method: ``"bm25"``, ``"embedding"``, or ``"hybrid"``.
+            group_by: Optional attribute name on ``CorpusUnit`` to
+                group by before indexing (e.g. ``"section_ref"`` for
+                section-level retrieval).  ``None`` gives paragraph-
+                or sentence-level (whatever level the Corpus was built
+                with).
+            **kwargs: Forwarded to the retriever's ``from_corpus()``.
+
+        Returns:
+            A ``Retriever`` protocol instance.  Cached: calling
+            ``corpus.retriever("bm25")`` twice returns the same object.
+
+        Example — coarse-to-fine::
+
+            section_r = corpus.retriever("embedding", group_by="section_ref")
+            paragraph_r = corpus.retriever("embedding")
+            # Use section_r for broad queries, paragraph_r for drill-down.
+
+        Raises:
+            ValueError: On unknown method.
+            ImportError: If the required package is not installed.
+        """
+        if self._retriever_cache is None:
+            self._retriever_cache = {}
+
+        cache_key = (method, group_by)
+        if cache_key in self._retriever_cache:
+            return self._retriever_cache[cache_key]
+
+        if method == "bm25":
+            from kaos_nlp_core.retrieval.bm25 import BM25Retriever
+
+            ret = BM25Retriever.from_corpus(self, group_by=group_by, **kwargs)
+        elif method == "embedding":
+            try:
+                from kaos_nlp_transformers.retrieval import EmbeddingRetriever
+            except ImportError as exc:
+                msg = (
+                    "Corpus.retriever('embedding') requires kaos-nlp-transformers. "
+                    "Fix: install kaos-nlp-transformers, or use method='bm25'."
+                )
+                raise ImportError(msg) from exc
+            ret = EmbeddingRetriever.from_corpus(self, group_by=group_by, **kwargs)
+        elif method == "hybrid":
+            from kaos_nlp_core.retrieval.hybrid import HybridRetriever
+
+            ret = HybridRetriever.from_corpus(self, group_by=group_by, **kwargs)
+        else:
+            msg = (
+                f"Unknown retriever method {method!r}. "
+                "Fix: use 'bm25', 'embedding', or 'hybrid'."
+            )
+            raise ValueError(msg)
+
+        self._retriever_cache[cache_key] = ret
+        return ret
 
     # ── TabularDocument bridge ─────────────────────────────────────────
 

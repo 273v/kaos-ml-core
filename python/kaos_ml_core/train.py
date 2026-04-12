@@ -8,10 +8,14 @@ NotImplementedError — see ``docs/internal/prd/kaos-ml-core.md`` §14.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-from sklearn.linear_model import LogisticRegression
 
 from kaos_ml_core.errors import TrainError
+
+if TYPE_CHECKING:
+    from sklearn.linear_model import LogisticRegression
 
 
 def train_logreg(
@@ -62,6 +66,8 @@ def train_logreg(
 
     X_train = X[rows]
     y_train = np.array([labels[r] for r in rows])
+
+    from sklearn.linear_model import LogisticRegression
 
     # sklearn 1.8 deprecated `penalty=` in favor of `l1_ratio=`. l1_ratio=0
     # corresponds to pure L2 regularization (the v0 default).

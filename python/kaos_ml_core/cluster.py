@@ -9,8 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
-from sklearn.cluster import MiniBatchKMeans
-from sklearn.preprocessing import normalize
 
 __all__ = ["ClusterResult", "kmedoid_seeds", "minibatch_kmeans"]
 
@@ -72,6 +70,9 @@ def minibatch_kmeans(
         msg = f"n_clusters must be >= 1, got {n_clusters}"
         raise ValueError(msg)
 
+    from sklearn.cluster import MiniBatchKMeans
+    from sklearn.preprocessing import normalize
+
     Xn = normalize(X, norm="l2", axis=1)
     km = MiniBatchKMeans(
         n_clusters=n_clusters,
@@ -121,6 +122,8 @@ def kmedoid_seeds(
             "Fix: pass the same feature matrix that produced the cluster result."
         )
         raise ValueError(msg)
+
+    from sklearn.preprocessing import normalize
 
     Xn = normalize(X, norm="l2", axis=1)
     seeds: list[int] = []

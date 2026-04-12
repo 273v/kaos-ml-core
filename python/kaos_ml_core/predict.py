@@ -8,20 +8,25 @@ source ContentDocument.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 
 from kaos_ml_core.corpus import Corpus
 from kaos_ml_core.errors import PredictError
 
+if TYPE_CHECKING:
+    from kaos_content.model.tabular import TabularDocument
+
 
 def predict_corpus(
     corpus: Corpus,
     X: np.ndarray,
-    clf,
+    clf: Any,
     *,
     threshold: float = 0.5,
     positive_label: str | None = None,
-):
+) -> TabularDocument:
     """Apply a fitted classifier to every row in a Corpus.
 
     Returns a ``TabularDocument`` with one row per ``CorpusUnit``,

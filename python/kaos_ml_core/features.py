@@ -9,6 +9,8 @@ on that side — no new Rust hot path needed in this package).
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from kaos_ml_core.corpus import Corpus
@@ -70,7 +72,7 @@ def embed_corpus(
     return vecs.astype(np.float32, copy=False)
 
 
-def tfidf_corpus(corpus: Corpus, **kwargs):
+def tfidf_corpus(corpus: Corpus, **kwargs: Any) -> None:
     """Produce a sparse TF-IDF feature matrix for a Corpus.
 
     Not implemented in v0 — lands in Phase v1.1, will consume
