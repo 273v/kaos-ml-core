@@ -47,6 +47,7 @@ dev = [
     "maturin>=1.12.6",
     "pytest>=8.3",
     "pytest-asyncio>=0.25",
+    "pytest-benchmark>=5.0",
     "ruff>=0.11",
     "ty>=0.0.1a17",
     # Integration test deps only — used by tests/integration/test_v0_vertical_slice.py
