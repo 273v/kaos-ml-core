@@ -67,7 +67,7 @@ class TestTrainLogreg:
     def test_custom_C(self, labeled_data: tuple[np.ndarray, dict[int, str]]) -> None:
         X, labels = labeled_data
         clf = train_logreg(X, labels, C=0.1)
-        assert clf.C == pytest.approx(0.1)
+        assert pytest.approx(0.1) == clf.C
 
     def test_predict_proba_shape(self, labeled_data: tuple[np.ndarray, dict[int, str]]) -> None:
         X, labels = labeled_data
@@ -118,4 +118,4 @@ class TestTrainClassifier:
     def test_passes_kwargs(self, labeled_data: tuple[np.ndarray, dict[int, str]]) -> None:
         X, labels = labeled_data
         clf = train_classifier(X, labels, model="logreg", C=10.0)
-        assert clf.C == pytest.approx(10.0)
+        assert pytest.approx(10.0) == clf.C

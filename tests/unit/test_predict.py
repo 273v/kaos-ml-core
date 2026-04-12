@@ -132,7 +132,7 @@ class TestPredictCorpus:
         corpus, X = _make_corpus_and_features()
 
         class FakeClf:
-            classes_ = ["a", "b"]
+            classes_: list[str] = ["a", "b"]  # noqa: RUF012
 
         with pytest.raises(PredictError, match="predict_proba"):
             predict_corpus(corpus, X, FakeClf())
