@@ -80,9 +80,15 @@ class TestPredictCorpus:
         table = result.tables[0]
         col_names = [c.name for c in table.columns]
         expected = [
-            "row", "block_ref", "doc_uri", "page",
-            "section_ref", "section_title", "predicted_label",
-            "score", "above_threshold",
+            "row",
+            "block_ref",
+            "doc_uri",
+            "page",
+            "section_ref",
+            "section_title",
+            "predicted_label",
+            "score",
+            "above_threshold",
         ]
         assert col_names == expected
 

@@ -82,8 +82,7 @@ async def label_seeds_with_llm(
             # Soft failure — skip this row, continue. v1.3 makes this
             # structured via the JSONL log.
             logger.warning(
-                "LLM labeling failed for row %d (block_ref=%s): %s. "
-                "Row dropped from seed labels.",
+                "LLM labeling failed for row %d (block_ref=%s): %s. Row dropped from seed labels.",
                 row,
                 unit.block_ref,
                 "classify call raised an exception",

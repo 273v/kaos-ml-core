@@ -560,7 +560,15 @@ class TestToTabular:
         tab = corpus.to_tabular()
         table = tab.tables[0]
 
-        expected_columns = ["row", "block_ref", "doc_uri", "page", "section_ref", "section_title", "text"]
+        expected_columns = [
+            "row",
+            "block_ref",
+            "doc_uri",
+            "page",
+            "section_ref",
+            "section_title",
+            "text",
+        ]
         actual_columns = [c.name for c in table.columns]
         assert actual_columns == expected_columns
 

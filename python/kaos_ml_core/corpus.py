@@ -542,10 +542,7 @@ class Corpus:
 
             ret = HybridRetriever.from_corpus(self, group_by=group_by, **kwargs)
         else:
-            msg = (
-                f"Unknown retriever method {method!r}. "
-                "Fix: use 'bm25', 'embedding', or 'hybrid'."
-            )
+            msg = f"Unknown retriever method {method!r}. Fix: use 'bm25', 'embedding', or 'hybrid'."
             raise ValueError(msg)
 
         self._retriever_cache[cache_key] = ret
