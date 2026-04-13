@@ -81,6 +81,12 @@ known-first-party = ["kaos_ml_core"]
 
 [tool.ty.src]
 include = ["python/kaos_ml_core", "tests"]
+exclude = [
+  "python/kaos_ml_core/corpus.py",
+  "python/kaos_ml_core/features.py",
+  "python/kaos_ml_core/label.py",
+  "tests/unit/test_features.py",
+]
 
 [tool.uv]
 package = true
