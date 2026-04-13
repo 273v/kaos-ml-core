@@ -8,8 +8,12 @@ the simplest possible thing. v1.3 wires it to
 
 from __future__ import annotations
 
+from kaos_core.logging import get_logger
+
 from kaos_ml_core.corpus import Corpus
 from kaos_ml_core.errors import LabelError
+
+logger = get_logger(__name__)
 
 
 async def label_seeds_with_llm(
@@ -34,10 +38,10 @@ async def label_seeds_with_llm(
     Returns:
         A dict mapping row index to assigned label string. Rows where
         the LLM returned an out-of-set label or where the call failed
-        are silently dropped — those rows will not appear in the
-        returned dict and will not be used for training. This is
-        intentional for v0; v1.3 makes failures structured via the
-        crash-safe JSONL log.
+        are dropped with a ``logger.warning()`` identifying the row
+        and reason — those rows will not appear in the returned dict
+        and will not be used for training. v1.3 makes failures
+        structured via the crash-safe JSONL log.
 
     Raises:
         LabelError: If the ``[llm]`` extra is not installed, the
@@ -77,12 +81,28 @@ async def label_seeds_with_llm(
         except Exception:
             # Soft failure — skip this row, continue. v1.3 makes this
             # structured via the JSONL log.
+            logger.warning(
+                "LLM labeling failed for row %d (block_ref=%s): %s. "
+                "Row dropped from seed labels.",
+                row,
+                unit.block_ref,
+                "classify call raised an exception",
+            )
             continue
 
         # starter.classify returns str (single-label) or list[str] (multi_label).
         # We always call single-label here, so result is a str.
         if isinstance(result, str) and result in classes_set:
             labels[row] = result
+        else:
+            logger.warning(
+                "LLM returned out-of-set label for row %d (block_ref=%s): "
+                "got %r, expected one of %s. Row dropped from seed labels.",
+                row,
+                unit.block_ref,
+                result,
+                sorted(classes_set),
+            )
 
     if not labels:
         msg = (
