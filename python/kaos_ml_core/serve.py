@@ -7,17 +7,14 @@ package.
 
 from __future__ import annotations
 
-import sys
 
-
-def main(argv: list[str] | None = None) -> int:
-    print(
-        "kaos-ml-core MCP server is not implemented in v0. "
-        "It ships in Phase v1.8 — see docs/internal/plans/kaos-ml-core-v0.md.",
-        file=sys.stderr,
+def main(argv: list[str] | None = None) -> None:
+    raise SystemExit(
+        "kaos-ml-serve is not yet implemented. "
+        "MCP tools for kaos-ml-core are planned for Phase v1.8. "
+        "Use the Python API directly instead."
     )
-    return 2
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
