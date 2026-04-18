@@ -28,11 +28,14 @@ from kaos_ml_core.errors import (
     PredictError,
     TrainError,
 )
+from kaos_ml_core.index import CorpusIndex, CorpusIndexManifest
 from kaos_ml_core.settings import KaosMLCoreSettings
 
 __all__ = [
     "Corpus",
     "CorpusError",
+    "CorpusIndex",
+    "CorpusIndexManifest",
     "CorpusUnit",
     "FeatureError",
     "KaosMLCoreError",

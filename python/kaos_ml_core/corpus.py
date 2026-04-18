@@ -360,6 +360,25 @@ class Corpus:
             raise IndexError(msg)
         return self._units[row]
 
+    # ── kaos_content.corpus.Corpus Protocol aliases ────────────────────
+    # Canonical accessors are ``__iter__`` / ``__len__`` / ``unit``;
+    # these thin aliases satisfy the ``kaos_content.corpus.Corpus``
+    # runtime-checkable Protocol so ``isinstance(corpus, Corpus)``
+    # succeeds downstream (e.g. in ``kaos_llm_core.programs.rag``).
+
+    def iter_passages(self) -> Iterator[CorpusUnit]:
+        """Protocol alias for :meth:`__iter__`."""
+        return iter(self._units)
+
+    def get_passage(self, row: int) -> CorpusUnit:
+        """Protocol alias for :meth:`unit`."""
+        return self.unit(row)
+
+    @property
+    def size(self) -> int:
+        """Protocol alias for :func:`len`."""
+        return len(self._units)
+
     def block_ref_for(self, row: int) -> str:
         """Return the block_ref for the given row index."""
         return self.unit(row).block_ref
