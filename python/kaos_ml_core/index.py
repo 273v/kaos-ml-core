@@ -78,6 +78,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from kaos_core.logging import get_logger
+
 from kaos_ml_core.corpus import Corpus, CorpusUnit
 from kaos_ml_core.errors import CorpusError
 
