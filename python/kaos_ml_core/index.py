@@ -71,13 +71,13 @@ import dataclasses
 import hashlib
 import importlib.metadata
 import json
-import logging
 import pathlib
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
+from kaos_core.logging import get_logger
 from kaos_ml_core.corpus import Corpus, CorpusUnit
 from kaos_ml_core.errors import CorpusError
 
@@ -85,7 +85,7 @@ if TYPE_CHECKING:
     import numpy as np
     from kaos_nlp_core.retrieval.protocol import SearchHit
 
-logger = logging.getLogger("kaos_ml_core.index")
+logger = get_logger(__name__)
 
 _MANIFEST_FILENAME = "manifest.json"
 _UNITS_FILENAME = "units.jsonl"
