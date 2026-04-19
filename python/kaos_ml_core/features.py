@@ -9,6 +9,7 @@ on that side — no new Rust hot path needed in this package).
 
 from __future__ import annotations
 
+import importlib
 from typing import Any
 
 import numpy as np
@@ -43,7 +44,7 @@ def embed_corpus(
             or if the backend returns an unexpected shape.
     """
     try:
-        from kaos_nlp_transformers import EmbeddingModel
+        transformers = importlib.import_module("kaos_nlp_transformers")
     except ImportError as exc:
         msg = (
             "embed_corpus requires the [transformers] extra. "
@@ -54,6 +55,7 @@ def embed_corpus(
         )
         raise FeatureError(msg) from exc
 
+    EmbeddingModel = transformers.EmbeddingModel
     settings = KaosMLCoreSettings()
     model_id = model or settings.default_embed_model
     em = EmbeddingModel.load(model_id)

@@ -74,19 +74,12 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "C4", "PTH"]
-ignore = ["B008", "E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["kaos_ml_core"]
 
 [tool.ty.src]
 include = ["python/kaos_ml_core", "tests"]
-exclude = [
-  "python/kaos_ml_core/corpus.py",
-  "python/kaos_ml_core/features.py",
-  "python/kaos_ml_core/label.py",
-  "tests/unit/test_features.py",
-]
 
 [tool.uv]
 package = true

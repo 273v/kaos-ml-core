@@ -8,6 +8,8 @@ the simplest possible thing. v1.3 wires it to
 
 from __future__ import annotations
 
+import importlib
+
 from kaos_core.logging import get_logger
 
 from kaos_ml_core.corpus import Corpus
@@ -49,7 +51,7 @@ async def label_seeds_with_llm(
             received a usable label.
     """
     try:
-        from kaos_llm_core.starter import classify
+        starter = importlib.import_module("kaos_llm_core.starter")
     except ImportError as exc:
         msg = (
             "label_seeds_with_llm requires the [llm] extra. "
@@ -59,6 +61,7 @@ async def label_seeds_with_llm(
         )
         raise LabelError(msg) from exc
 
+    classify = starter.classify
     if not classes or len(classes) < 2:
         msg = (
             f"classify requires at least 2 classes; got {len(classes)}. "

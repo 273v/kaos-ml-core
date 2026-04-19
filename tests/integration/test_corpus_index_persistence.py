@@ -153,7 +153,8 @@ class TestCorpusIndexBenchmark:
                 f"doc:synthetic-{i}",
                 [
                     f"Synthetic paragraph {j} in document {i}. "
-                    f"This text mentions the keyword alpha{i % 5}, beta{j % 7}, and gamma{(i + j) % 11}."
+                    f"This text mentions the keyword alpha{i % 5}, "
+                    f"beta{j % 7}, and gamma{(i + j) % 11}."
                     for j in range(paragraphs_per_doc)
                 ],
             )

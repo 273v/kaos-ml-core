@@ -7,6 +7,8 @@ These tests verify the API contracts and error handling.
 
 from __future__ import annotations
 
+import importlib
+
 import pytest
 
 from kaos_ml_core.corpus import Corpus
@@ -67,8 +69,7 @@ class TestEmbedCorpus:
         """embed_corpus should raise FeatureError when kaos-nlp-transformers
         is not installed."""
         try:
-            import kaos_nlp_transformers  # noqa: F401
-
+            importlib.import_module("kaos_nlp_transformers")
             pytest.skip("kaos-nlp-transformers is installed; cannot test import error")
         except ImportError:
             pass
@@ -83,7 +84,7 @@ class TestEmbedCorpus:
         """If kaos-nlp-transformers is installed, embed_corpus should
         produce a valid feature matrix."""
         try:
-            import kaos_nlp_transformers  # noqa: F401
+            importlib.import_module("kaos_nlp_transformers")
         except ImportError:
             pytest.skip("kaos-nlp-transformers not installed")
 

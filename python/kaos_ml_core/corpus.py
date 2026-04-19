@@ -24,6 +24,7 @@ exactly one source of truth for "what counts as a row."
 
 from __future__ import annotations
 
+import importlib
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -548,13 +549,14 @@ class Corpus:
             ret = BM25Retriever.from_corpus(self, group_by=group_by, **kwargs)
         elif method == "embedding":
             try:
-                from kaos_nlp_transformers.retrieval import EmbeddingRetriever
+                retrieval = importlib.import_module("kaos_nlp_transformers.retrieval")
             except ImportError as exc:
                 msg = (
                     "Corpus.retriever('embedding') requires kaos-nlp-transformers. "
                     "Fix: install kaos-nlp-transformers, or use method='bm25'."
                 )
                 raise ImportError(msg) from exc
+            EmbeddingRetriever = retrieval.EmbeddingRetriever
             ret = EmbeddingRetriever.from_corpus(self, group_by=group_by, **kwargs)
         elif method == "hybrid":
             from kaos_nlp_core.retrieval.hybrid import HybridRetriever
