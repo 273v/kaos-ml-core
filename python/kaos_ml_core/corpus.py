@@ -167,6 +167,91 @@ class Corpus:
         )
 
     @classmethod
+    def from_units(
+        cls,
+        units: Iterable[CorpusUnit],
+        *,
+        metadata: dict[str, Any] | None = None,
+    ) -> Corpus:
+        """Build a Corpus from an iterable of pre-constructed units.
+
+        The root construction primitive. Callers decide what a unit is
+        — a paragraph, a sentence, a chunk, a row from an external
+        feed — by handing in :class:`CorpusUnit` instances directly.
+        Row indices are re-numbered sequentially (``0..N-1``); callers
+        don't need to pre-number.
+
+        This exists so that every "granularity" higher than paragraph
+        / sentence (e.g. whole-chunk indexing, pre-tokenized rows,
+        non-AST sources) does **not** require a new kwarg on
+        :meth:`from_documents` or ContentDocument-surgery in the
+        caller. Any iterator that yields ``(text, doc_uri, block_ref,
+        ...)`` can now be a Corpus.
+
+        Args:
+            units: Iterable of ``CorpusUnit``. The ``row`` field is
+                overwritten with a sequential index; every other field
+                (text, block_ref, doc_uri, page, section_ref,
+                section_title) is preserved verbatim.
+            metadata: Optional additional keys to merge into
+                ``corpus_metadata``. ``unit_count`` and ``doc_uris``
+                are computed automatically and will overwrite any
+                caller-supplied values for those keys.
+
+        Raises:
+            CorpusError: On empty input or on a unit with empty text /
+                missing doc_uri (the AST-grounding invariants require
+                both).
+        """
+        materialized: list[CorpusUnit] = []
+        for i, u in enumerate(units):
+            if not u.text or not u.text.strip():
+                msg = (
+                    f"CorpusUnit at index {i} has empty text. "
+                    "Fix: drop empty units before calling from_units, "
+                    "or verify the upstream serializer produced content."
+                )
+                raise CorpusError(msg)
+            if not u.doc_uri:
+                msg = (
+                    f"CorpusUnit at index {i} has no doc_uri. "
+                    "Fix: populate CorpusUnit.doc_uri — every row must "
+                    "carry its source URI for AST grounding."
+                )
+                raise CorpusError(msg)
+            # Overwrite row for dense 0..N-1 indexing.
+            materialized.append(
+                CorpusUnit(
+                    row=i,
+                    text=u.text,
+                    block_ref=u.block_ref,
+                    doc_uri=u.doc_uri,
+                    page=u.page,
+                    section_ref=u.section_ref,
+                    section_title=u.section_title,
+                )
+            )
+
+        if not materialized:
+            msg = (
+                "Corpus.from_units requires at least one unit. "
+                "Fix: pass a non-empty iterable, or check that the unit "
+                "producer (paragraph / sentence / chunk walker) yielded "
+                "non-empty text for at least one block."
+            )
+            raise CorpusError(msg)
+
+        seen_uris: dict[str, None] = {}
+        for u in materialized:
+            seen_uris[u.doc_uri] = None
+
+        corpus_metadata: dict[str, Any] = dict(metadata or {})
+        corpus_metadata["unit_count"] = len(materialized)
+        corpus_metadata["doc_uris"] = list(seen_uris)
+
+        return cls(materialized, corpus_metadata=corpus_metadata)
+
+    @classmethod
     def from_documents(
         cls,
         documents: Iterable[ContentDocument],
@@ -176,9 +261,19 @@ class Corpus:
     ) -> Corpus:
         """Build a Corpus from one or more ContentDocuments.
 
+        Sugar over :meth:`from_units`: picks the unit producer for
+        ``level``, walks each document, and hands the resulting units
+        off to the root primitive.
+
         Args:
             documents: ContentDocument iterables.
-            level: ``"paragraph"`` (default) or ``"sentence"``.
+            level: ``"paragraph"`` (default), ``"sentence"``, or
+                ``"document"``. ``"document"`` emits one unit per
+                ContentDocument containing the full serialized text —
+                use it for chunk-level indexing when each ContentDocument
+                is already a coherent chunk (e.g. from SectionChunker)
+                and you want retrieval at that granularity rather than
+                at paragraph granularity.
             doc_uris: Optional per-document URI overrides. When ``None``,
                 the URI is read from ``document.metadata.source.uri``.
                 If neither is available, ``CorpusError`` is raised.
@@ -187,11 +282,6 @@ class Corpus:
             CorpusError: On unknown level, mismatched doc_uris length,
                 empty input, or missing doc URI.
         """
-        from kaos_content.units import (
-            iter_paragraph_units,
-            iter_sentence_units,
-        )
-
         docs = list(documents)
         if not docs:
             msg = (
@@ -208,52 +298,14 @@ class Corpus:
             )
             raise CorpusError(msg)
 
-        if level not in ("paragraph", "sentence"):
-            msg = (
-                f"Unknown level={level!r}. "
-                "Fix: use 'paragraph' (default) or 'sentence'. "
-                "Sentence-level requires the kaos-nlp-core sentence segmenter."
-            )
-            raise CorpusError(msg)
+        units = list(_iter_document_units(docs, uris, level))
 
-        units: list[CorpusUnit] = []
-        global_row = 0
-
-        for doc, override_uri in zip(docs, uris, strict=True):
-            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
-
-            local_units = (
-                iter_paragraph_units(doc) if level == "paragraph" else iter_sentence_units(doc)
-            )
-
-            for lu in local_units:
-                units.append(
-                    CorpusUnit(
-                        row=global_row,
-                        text=lu.text,
-                        block_ref=lu.block_ref,
-                        doc_uri=doc_uri,
-                        page=lu.page,
-                        section_ref=lu.section_ref,
-                        section_title=lu.section_title,
-                    )
-                )
-                global_row += 1
-
-        # Collect unique doc URIs in insertion order.
-        seen_uris: dict[str, None] = {}
-        for u in units:
-            seen_uris[u.doc_uri] = None
-
-        return cls(
+        # Preserve the historical ``corpus_metadata`` shape.
+        corpus = cls.from_units(
             units,
-            corpus_metadata={
-                "level": level,
-                "doc_count": len(docs),
-                "unit_count": len(units),
-                "doc_uris": list(seen_uris),
-            },
+            metadata={"level": level, "doc_count": len(docs)},
         )
+        return corpus
 
     def extend(
         self,
@@ -618,6 +670,80 @@ def _resolve_doc_uri(doc: ContentDocument) -> str:
         "ContentDocument has no metadata.source.uri. "
         "Fix: pass doc_uris=[...] explicitly to Corpus.from_documents(), "
         "or set document.metadata.source.uri before constructing the Corpus."
+    )
+    raise CorpusError(msg)
+
+
+def _iter_document_units(
+    docs: list[ContentDocument],
+    uris: list[str | None],
+    level: str,
+) -> Iterable[CorpusUnit]:
+    """Dispatch to the unit producer for ``level``.
+
+    Pulled out of :meth:`Corpus.from_documents` so every level shares
+    the same resolve-uri + CorpusUnit-construction plumbing. Callers
+    of :meth:`Corpus.from_units` that need a custom granularity build
+    :class:`CorpusUnit` themselves and skip this helper entirely.
+    """
+    from kaos_content.serializers.text import serialize_text
+    from kaos_content.units import iter_paragraph_units, iter_sentence_units
+
+    if level == "paragraph":
+        for doc, override_uri in zip(docs, uris, strict=True):
+            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
+            for lu in iter_paragraph_units(doc):
+                yield CorpusUnit(
+                    row=0,
+                    text=lu.text,
+                    block_ref=lu.block_ref,
+                    doc_uri=doc_uri,
+                    page=lu.page,
+                    section_ref=lu.section_ref,
+                    section_title=lu.section_title,
+                )
+        return
+    if level == "sentence":
+        for doc, override_uri in zip(docs, uris, strict=True):
+            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
+            for lu in iter_sentence_units(doc):
+                yield CorpusUnit(
+                    row=0,
+                    text=lu.text,
+                    block_ref=lu.block_ref,
+                    doc_uri=doc_uri,
+                    page=lu.page,
+                    section_ref=lu.section_ref,
+                    section_title=lu.section_title,
+                )
+        return
+    if level == "document":
+        # One unit per ContentDocument containing the full serialized
+        # text. The unit *is* the document — ``block_ref="#"`` is the
+        # URI-fragment form of the JSON Pointer document root
+        # (RFC 6901 §6): non-empty so the corpus-wide invariant holds,
+        # semantically correct because every block under it is
+        # subsumed by the unit's text.
+        for doc, override_uri in zip(docs, uris, strict=True):
+            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
+            text = serialize_text(doc).strip()
+            if not text:
+                continue
+            yield CorpusUnit(
+                row=0,
+                text=text,
+                block_ref="#",
+                doc_uri=doc_uri,
+                page=None,
+                section_ref=None,
+                section_title=None,
+            )
+        return
+    msg = (
+        f"Unknown level={level!r}. "
+        "Fix: use 'paragraph' (default), 'sentence', or 'document'. "
+        "For other granularities, construct CorpusUnit instances "
+        "directly and pass them to Corpus.from_units()."
     )
     raise CorpusError(msg)
 

@@ -221,6 +221,126 @@ def test_unknown_level_raises():
         Corpus.from_documents([doc], level="bogus")
 
 
+class TestFromUnits:
+    """Corpus.from_units is the general primitive — callers hand it
+    pre-constructed CorpusUnit instances so any granularity (paragraph,
+    sentence, chunk, external feed) is expressible without adding a
+    new ``level=`` string.
+    """
+
+    def test_renumbers_rows_sequentially(self):
+        from kaos_ml_core import Corpus, CorpusUnit
+
+        # Caller numbers everything 42 — from_units should overwrite to 0..N-1.
+        units = [
+            CorpusUnit(
+                row=42,
+                text=f"row {i}",
+                block_ref=f"#/body/{i}",
+                doc_uri="test://a",
+                page=None,
+                section_ref=None,
+                section_title=None,
+            )
+            for i in range(3)
+        ]
+        corpus = Corpus.from_units(units)
+        assert [u.row for u in corpus] == [0, 1, 2]
+
+    def test_empty_text_raises(self):
+        from kaos_ml_core import Corpus, CorpusError, CorpusUnit
+
+        units = [
+            CorpusUnit(
+                row=0,
+                text="",
+                block_ref="#/body/0",
+                doc_uri="test://a",
+                page=None,
+                section_ref=None,
+                section_title=None,
+            ),
+        ]
+        with pytest.raises(CorpusError, match="empty text"):
+            Corpus.from_units(units)
+
+    def test_missing_doc_uri_raises(self):
+        from kaos_ml_core import Corpus, CorpusError, CorpusUnit
+
+        units = [
+            CorpusUnit(
+                row=0,
+                text="x",
+                block_ref="#/body/0",
+                doc_uri="",
+                page=None,
+                section_ref=None,
+                section_title=None,
+            ),
+        ]
+        with pytest.raises(CorpusError, match="no doc_uri"):
+            Corpus.from_units(units)
+
+    def test_empty_iterable_raises(self):
+        from kaos_ml_core import Corpus, CorpusError
+
+        with pytest.raises(CorpusError, match="at least one unit"):
+            Corpus.from_units([])
+
+    def test_preserves_provenance_fields(self):
+        from kaos_ml_core import Corpus, CorpusUnit
+
+        u = CorpusUnit(
+            row=0,
+            text="hello world",
+            block_ref="#/body/5",
+            doc_uri="test://doc",
+            page=3,
+            section_ref="#/body/1",
+            section_title="Intro",
+        )
+        corpus = Corpus.from_units([u])
+        [got] = list(corpus)
+        assert got.text == "hello world"
+        assert got.block_ref == "#/body/5"
+        assert got.doc_uri == "test://doc"
+        assert got.page == 3
+        assert got.section_ref == "#/body/1"
+        assert got.section_title == "Intro"
+
+
+class TestFromDocumentsLevelDocument:
+    """``level="document"`` indexes one unit per ContentDocument, carrying
+    the full serialized text. The right mode for chunk-level retrieval
+    when each input ContentDocument is already a coherent chunk from
+    SectionChunker and the caller wants retrieval at that granularity
+    rather than at paragraph granularity.
+    """
+
+    def test_one_unit_per_document(self):
+        from kaos_ml_core import Corpus
+
+        d1 = _make_doc(["First doc para 1.", "First doc para 2."])
+        d2 = _make_doc(["Second doc."])
+        corpus = Corpus.from_documents([d1, d2], level="document")
+        assert len(corpus) == 2
+
+    def test_text_is_full_serialization(self):
+        from kaos_ml_core import Corpus
+
+        d = _make_doc(["Alpha.", "Beta.", "Gamma."])
+        corpus = Corpus.from_documents([d], level="document")
+        [u] = list(corpus)
+        assert "Alpha" in u.text and "Beta" in u.text and "Gamma" in u.text
+
+    def test_empty_document_is_skipped(self):
+        from kaos_ml_core import Corpus, CorpusError
+
+        d_empty = _make_doc(["   "])  # paragraphs that serialize to whitespace
+        with pytest.raises(CorpusError):
+            Corpus.from_documents([d_empty], level="document")
+
+
 def test_to_tabular_round_trip():
     from kaos_ml_core import Corpus
 
