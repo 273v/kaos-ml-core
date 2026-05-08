@@ -156,14 +156,3 @@ cache-keys = [
   { file = "Cargo.toml" },
   { file = "**/*.rs" },
 ]
-
-# Editable sibling paths for the monorepo only. Stripped at promotion time
-# per docs/oss/00-overview/decisions.md D015 — the per-module repo's
-# pyproject.toml uses pure PyPI version pins.
-[tool.uv.sources]
-kaos-core = { path = "../kaos-core", editable = true }
-kaos-content = { path = "../kaos-content", editable = true }
-kaos-nlp-core = { path = "../kaos-nlp-core", editable = true }
-kaos-llm-core = { path = "../kaos-llm-core", editable = true }
-kaos-mcp = { path = "../kaos-mcp", editable = true }
-kaos-pdf = { path = "../kaos-pdf", editable = true }
