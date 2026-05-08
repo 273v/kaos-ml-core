@@ -1,6 +1,10 @@
 # Rust build artifacts
 /target/
-Cargo.lock
+# Cargo.lock IS committed at the per-module repo level — needed by
+# cargo-audit in the Security workflow and by the wheel-matrix
+# release.yml to reproduce the same dependency graph across runners.
+# (The monorepo copy stays gitignored to avoid lockfile churn between
+# sibling packages.)
 
 # Maturin compiled extension (built by `maturin develop`)
 python/kaos_ml_core/_rust.cpython-*.so
