@@ -208,35 +208,52 @@ jobs:
       - name: Smoke-test the built wheel in a clean venv
         run: |
           uv venv --python 3.13 /tmp/smoke
-          uv pip install --python /tmp/smoke/bin/python dist/kaos_ml_core-*-cp*.whl
+          # Install with [mcp] so register_ml_tools is reachable; the
+          # actual ML-pipeline smoke (embed + train + predict) lives in
+          # the integration tests, not in this fast-CI smoke.
+          uv pip install --python /tmp/smoke/bin/python "dist/kaos_ml_core-0.1.0a1-cp313-abi3-linux_x86_64.whl[mcp]"
           /tmp/smoke/bin/python -c "
           import kaos_ml_core
-          from kaos_ml_core import Corpus, KaosMLCoreSettings
+          from kaos_ml_core import (
+              Corpus, KaosMLCoreSettings, Metrics, Pipeline, PipelineError,
+              SplitResult, ThresholdResult, aggregate_predictions, evaluate,
+              stratified_split, tune_threshold, wilson_score_interval,
+          )
           assert kaos_ml_core.__version__, 'version missing from wheel'
-          assert len(kaos_ml_core.__all__) >= 12, f'unexpected public surface: {kaos_ml_core.__all__}'
-          # Round-trip a small Corpus through the kaos-content AST.
-          from kaos_content.model.blocks import Paragraph
+          assert len(kaos_ml_core.__all__) >= 22, f'unexpected public surface: {kaos_ml_core.__all__}'
+
+          # Hard-rule enforcement primitives are reachable.
+          lo, hi = wilson_score_interval(80, 100, confidence=0.95)
+          assert 0.7 < lo < 0.72 and 0.86 < hi < 0.87
+
+          # Four granularity levels supported.
+          from kaos_content.model.blocks import Heading, Paragraph
           from kaos_content.model.document import ContentDocument
           from kaos_content.model.inlines import Text
           from kaos_content.model.metadata import DocumentMetadata, SourceRef
           doc = ContentDocument(
               metadata=DocumentMetadata(source=SourceRef(uri='smoke://1')),
               body=(
-                  Paragraph(children=(Text(value='Force majeure clauses excuse performance.'),)),
-                  Paragraph(children=(Text(value='Indemnity caps the liability of the seller.'),)),
+                  Heading(depth=1, children=(Text(value='Indemnification'),)),
+                  Paragraph(children=(Text(value='The Seller indemnifies Buyer.'),)),
+                  Paragraph(children=(Text(value='Cap is 10 percent.'),)),
               ),
           )
-          corpus = Corpus.from_paragraphs(doc)
-          # AST-grounding invariants (PRD §5).
-          assert len(corpus) == 2
-          assert corpus.unit(0).row == 0
-          assert corpus.row_for(corpus.unit(1).block_ref) == 1
-          assert corpus.block_ref_for(0) == corpus.unit(0).block_ref
+          assert len(Corpus.from_documents([doc], level='paragraph')) == 2
+          assert len(Corpus.from_documents([doc], level='section')) == 1
+          assert len(Corpus.from_documents([doc], level='document')) == 1
+
+          # MCP tool surface registers 11 tools.
+          from kaos_core import KaosRuntime
+          from kaos_ml_core.tools import register_ml_tools
+          rt = KaosRuntime()
+          assert register_ml_tools(rt) == 11
+
           # Settings + Rust extension reachable.
           assert KaosMLCoreSettings().default_threshold == 0.5
           from kaos_ml_core._rust import version as rust_version_fn
           assert rust_version_fn() == kaos_ml_core.rust_version
-          print(f'kaos-ml-core {kaos_ml_core.__version__}: smoke OK')
+          print(f'kaos-ml-core {kaos_ml_core.__version__}: smoke OK ({len(kaos_ml_core.__all__)} symbols, 11 MCP tools)')
           "
           # Exercise the CLI entrypoint.
           /tmp/smoke/bin/kaos-ml info --json

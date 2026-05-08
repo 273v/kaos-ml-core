@@ -47,27 +47,34 @@ classifiers = [
 ]
 
 dependencies = [
-  "kaos-core>=0.1.0a1",
-  "kaos-content>=0.1.0a1",
-  "kaos-nlp-core>=0.1.0a1",
-  # numpy 2.1 / scipy 1.14.1 are the first releases shipping CPython 3.13
-  # binary wheels; pinning lower would force the lowest-direct-resolution
-  # CI leg to build numpy/scipy from source and fail in CI's bare runner.
+  "kaos-core>=0.1.0a4",
+  "kaos-content>=0.1.0a2",
+  "kaos-nlp-core>=0.1.0a2",
   "numpy>=2.1",
   "scipy>=1.14.1",
   "scikit-learn>=1.8",
+  # joblib ships transitively with sklearn but Pipeline.save imports it
+  # directly — declare it so the dependency surface is honest.
+  "joblib>=1.3",
 ]
 
-# D016: extras may reference kaos-* packages not yet on PyPI; users
-# requesting an extra before its companion ships get a normal pip
-# resolution error with a clear message. The `[transformers]` extra is
-# DEFERRED to 0.1.0a2 because kaos-nlp-transformers is not yet on PyPI;
-# `uv lock` is strict and refuses to resolve a project whose declared
-# extra points at an unpublished sibling. Re-add at 0.1.0a2 once
-# kaos-nlp-transformers ships.
+# All three extras resolve cleanly as of 0.1.0a1 — their sibling packages
+# are now on PyPI:
+#   - kaos-nlp-transformers 0.1.0a2 (audit-02 closed; embed L2-normalized)
+#   - kaos-llm-core         0.1.0a3
+#   - kaos-mcp              0.1.0a2
 [project.optional-dependencies]
-llm = ["kaos-llm-core>=0.1.0a1"]
-mcp = ["kaos-mcp>=0.1.0a1"]
+# Dense-embedding featurization via fastembed (BAAI/bge-small-en-v1.5).
+# REQUIRED for the full pipeline — Pipeline.predict and embed_corpus need
+# it. Without [transformers], you can still use Corpus, evaluate(),
+# split, threshold, and the classifier directly with your own feature
+# matrix.
+transformers = ["kaos-nlp-transformers>=0.1.0a2"]
+# LLM cold-start labeling via kaos-llm-core's classify program.
+llm = ["kaos-llm-core>=0.1.0a3"]
+# MCP tool surface — register_ml_tools(runtime). Required to expose the
+# 11 MCP tools to an agent.
+mcp = ["kaos-mcp>=0.1.0a2"]
 
 [project.scripts]
 kaos-ml = "kaos_ml_core.cli:main"
@@ -159,3 +166,6 @@ cache-keys = [
   { file = "Cargo.toml" },
   { file = "**/*.rs" },
 ]
+
+# Per-module repo: no [tool.uv.sources] — all kaos-* deps resolve from
+# PyPI per docs/oss/00-overview/decisions.md D015.

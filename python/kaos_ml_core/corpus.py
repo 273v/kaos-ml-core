@@ -267,13 +267,21 @@ class Corpus:
 
         Args:
             documents: ContentDocument iterables.
-            level: ``"paragraph"`` (default), ``"sentence"``, or
-                ``"document"``. ``"document"`` emits one unit per
-                ContentDocument containing the full serialized text —
-                use it for chunk-level indexing when each ContentDocument
-                is already a coherent chunk (e.g. from SectionChunker)
-                and you want retrieval at that granularity rather than
-                at paragraph granularity.
+            level: One of:
+
+                - ``"paragraph"`` (default) — one unit per AST paragraph.
+                  Use for clause-level classification (arbitration clauses,
+                  governing-law extraction).
+                - ``"sentence"`` — one unit per sentence (uses
+                  kaos-nlp-core sentence segmentation). Use for the finest
+                  granularity (privilege footers, defined terms).
+                - ``"section"`` — one unit per (doc_uri, section_ref)
+                  group; paragraphs sharing a section_ref are concatenated.
+                  Use for due-diligence section-finding (find all
+                  indemnification sections across a data room).
+                - ``"document"`` — one unit per ContentDocument containing
+                  the full serialized text. Use for document-level triage
+                  (NDA vs SPA classification, ediscovery responsiveness).
             doc_uris: Optional per-document URI overrides. When ``None``,
                 the URI is read from ``document.metadata.source.uri``.
                 If neither is available, ``CorpusError`` is raised.
@@ -739,9 +747,70 @@ def _iter_document_units(
                 section_title=None,
             )
         return
+    if level == "section":
+        # One unit per (doc_uri, section_ref) group. Paragraphs sharing a
+        # section_ref are concatenated with "\n\n" so the embedding model
+        # sees the section as one logical span. Paragraphs without a
+        # section_ref are emitted as a single "ungrouped" unit per doc
+        # (rare in practice for well-formed AST output, but kaos-content
+        # can produce them when a doc has no headings).
+        #
+        # Downstream use cases for section-level:
+        #   * Due diligence: "find the indemnification section across
+        #     1,000 contracts" — predicting at the section is the right
+        #     granularity (smaller than doc, larger than paragraph).
+        #   * Privilege detection: "is this section privileged?" — privilege
+        #     often groups whole sections, not individual paragraphs.
+        #
+        # Group preservation: we use an OrderedDict so output ordering is
+        # stable (first-seen-first-emitted), matching the ordering callers
+        # see when the docs are paragraph-iterated.
+        from collections import OrderedDict
+
+        for doc, override_uri in zip(docs, uris, strict=True):
+            doc_uri = override_uri if override_uri is not None else _resolve_doc_uri(doc)
+            sections: OrderedDict[
+                str | None, list[tuple[str, str | None, str | None, int | None]]
+            ] = OrderedDict()
+            ungrouped_counter = 0
+            for lu in iter_paragraph_units(doc):
+                sec_key: str | None = lu.section_ref
+                if sec_key is None:
+                    sec_key = f"#ungrouped-{ungrouped_counter}"
+                    ungrouped_counter += 1
+                sections.setdefault(sec_key, []).append(
+                    (lu.text, lu.section_ref, lu.section_title, lu.page)
+                )
+            for sec_key, paragraphs in sections.items():
+                texts = [p[0] for p in paragraphs if p[0].strip()]
+                if not texts:
+                    continue
+                joined = "\n\n".join(texts)
+                # block_ref points at the section heading when known,
+                # else the synthetic ungrouped key.
+                first_section_ref = paragraphs[0][1]
+                section_title = paragraphs[0][2]
+                first_page = next((p[3] for p in paragraphs if p[3] is not None), None)
+                # Guarantee a non-None block_ref. sec_key is the
+                # ungrouped synthetic id when first_section_ref is None.
+                # sec_key is always str by construction (built from
+                # lu.section_ref or the f"#ungrouped-{n}" sentinel above).
+                effective_block_ref: str = (
+                    first_section_ref if first_section_ref is not None else str(sec_key)
+                )
+                yield CorpusUnit(
+                    row=0,
+                    text=joined,
+                    block_ref=effective_block_ref,
+                    doc_uri=doc_uri,
+                    page=first_page,
+                    section_ref=first_section_ref,
+                    section_title=section_title,
+                )
+        return
     msg = (
         f"Unknown level={level!r}. "
-        "Fix: use 'paragraph' (default), 'sentence', or 'document'. "
+        "Fix: use 'paragraph' (default), 'sentence', 'section', or 'document'. "
         "For other granularities, construct CorpusUnit instances "
         "directly and pass them to Corpus.from_units()."
     )
