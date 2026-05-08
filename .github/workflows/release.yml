@@ -45,8 +45,8 @@ jobs:
       - name: Install Python 3.13
         run: uv python install 3.13
 
-      - name: Install dependencies
-        run: uv sync --group dev --python 3.13
+      - name: Install dependencies (transformers + mcp for ty resolution)
+        run: uv sync --group dev --extra transformers --extra mcp --python 3.13
 
       - name: Verify Cargo.toml version matches tag
         id: version

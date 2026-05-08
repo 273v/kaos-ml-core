@@ -41,8 +41,12 @@ jobs:
       - name: Install Python 3.13
         run: uv python install 3.13
 
-      - name: Install dependencies
-        run: uv sync --group dev --python 3.13
+      - name: Install dependencies (transformers + mcp extras for ty resolution)
+        # ty static-analyzes the pipeline.py / tools.py imports of
+        # kaos_nlp_transformers.models and kaos_mcp; install both extras
+        # so the symbols resolve. The runtime tests don't need this — the
+        # imports are gated by try/except — but the type checker is strict.
+        run: uv sync --group dev --extra transformers --extra mcp --python 3.13
 
       - name: Ruff format check
         run: uv run ruff format --check python/kaos_ml_core tests
@@ -72,8 +76,8 @@ jobs:
       - name: Install Python 3.13
         run: uv python install 3.13
 
-      - name: Install dependencies
-        run: uv sync --group dev --python 3.13
+      - name: Install dependencies (transformers + mcp for ty resolution)
+        run: uv sync --group dev --extra transformers --extra mcp --python 3.13
 
       - name: Run pre-commit
         run: uvx pre-commit run --all-files --show-diff-on-failure
