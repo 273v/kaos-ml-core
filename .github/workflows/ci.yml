@@ -239,7 +239,7 @@ jobs:
           print(f'kaos-ml-core {kaos_ml_core.__version__}: smoke OK')
           "
           # Exercise the CLI entrypoint.
-          /tmp/smoke/bin/kaos-ml --json version
+          /tmp/smoke/bin/kaos-ml info --json
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v7

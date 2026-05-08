@@ -50,8 +50,11 @@ dependencies = [
   "kaos-core>=0.1.0a1",
   "kaos-content>=0.1.0a1",
   "kaos-nlp-core>=0.1.0a1",
-  "numpy>=2.0",
-  "scipy>=1.13",
+  # numpy 2.1 / scipy 1.14.1 are the first releases shipping CPython 3.13
+  # binary wheels; pinning lower would force the lowest-direct-resolution
+  # CI leg to build numpy/scipy from source and fail in CI's bare runner.
+  "numpy>=2.1",
+  "scipy>=1.14.1",
   "scikit-learn>=1.8",
 ]
 
