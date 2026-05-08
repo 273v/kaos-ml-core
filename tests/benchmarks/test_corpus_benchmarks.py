@@ -3,18 +3,18 @@
 Uses pytest-benchmark to measure hot-path operations at various corpus
 sizes. Run with:
 
-    pytest tests/unit/test_corpus_benchmarks.py --benchmark-only -v
+    pytest tests/benchmarks --benchmark-only -v
 
 Or to compare against a saved baseline:
 
-    pytest tests/unit/test_corpus_benchmarks.py --benchmark-compare
+    pytest tests/benchmarks --benchmark-compare
 """
 
 from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
+pytestmark = pytest.mark.benchmark
 
 
 # ---------------------------------------------------------------------------
