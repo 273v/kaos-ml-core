@@ -4,68 +4,134 @@ build-backend = "maturin"
 
 [project]
 name = "kaos-ml-core"
-version = "0.1.0"
-description = "Classical ML primitives for the Kelvin Agentic OS"
+# Single source of truth: Cargo.toml [package].version. Maturin reads
+# Cargo SemVer (e.g. "0.1.0-alpha.1") and emits PEP 440-normalized
+# wheel metadata (e.g. "0.1.0a1"). Matches the kaos-graph / kaos-nlp-core
+# convention; see docs/oss/30-rust-packaging/version-coupling.md.
+dynamic = ["version"]
+description = "Classical ML primitives for the Kelvin Agentic OS — corpus, clustering, LLM labeling, logistic regression on the kaos-content AST"
 readme = "README.md"
 requires-python = ">=3.13"
-license = { text = "LicenseRef-Proprietary" }
-authors = [{ name = "273 Ventures LLC", email = "it@273ventures.com" }]
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+  { name = "273 Ventures LLC", email = "it@273ventures.com" },
+]
+maintainers = [
+  { name = "Michael Bommarito", email = "mike@273ventures.com" },
+]
+keywords = [
+  "machine-learning",
+  "scikit-learn",
+  "embeddings",
+  "clustering",
+  "logistic-regression",
+  "agentic",
+  "mcp",
+  "kaos",
+]
 classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Rust",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
 ]
 
 dependencies = [
-    "kaos-core>=0.1.0",
-    "kaos-content>=0.1.0",
-    "kaos-nlp-core>=0.1.0",
-    "numpy>=2.0",
-    "scipy>=1.13",
-    "scikit-learn>=1.8",
+  "kaos-core>=0.1.0a1",
+  "kaos-content>=0.1.0a1",
+  "kaos-nlp-core>=0.1.0a1",
+  "numpy>=2.0",
+  "scipy>=1.13",
+  "scikit-learn>=1.8",
 ]
 
+# D016: extras may reference kaos-* packages not yet on PyPI; users
+# requesting an extra before its companion ships get a normal pip
+# resolution error with a clear message. The `[transformers]` extra is
+# DEFERRED to 0.1.0a2 because kaos-nlp-transformers is not yet on PyPI;
+# `uv lock` is strict and refuses to resolve a project whose declared
+# extra points at an unpublished sibling. Re-add at 0.1.0a2 once
+# kaos-nlp-transformers ships.
 [project.optional-dependencies]
-# Dense embeddings — pulls in the sibling package and (transitively) fastembed.
-# Required for the v0 vertical slice.
-transformers = ["kaos-nlp-transformers>=0.1.0"]
-# LLM-driven labeling
-llm = ["kaos-llm-core>=0.1.0"]
-# MCP tools and resource templates (v1.8)
-mcp = ["kaos-core>=0.1.0", "kaos-mcp>=0.1.0"]
-# Phase v1.6 will add: al = ["small-text>=2.0"] (waiting on stable release)
-# Phase v1.7 will add: bundle = ["skops>=0.10"]
+llm = ["kaos-llm-core>=0.1.0a1"]
+mcp = ["kaos-mcp>=0.1.0a1"]
 
 [project.scripts]
 kaos-ml = "kaos_ml_core.cli:main"
 kaos-ml-serve = "kaos_ml_core.serve:main"
 
+[project.urls]
+Homepage = "https://kelvin.legal"
+Documentation = "https://docs.kelvin.legal"
+Repository = "https://github.com/273v/kaos-ml-core"
+Issues = "https://github.com/273v/kaos-ml-core/issues"
+Changelog = "https://github.com/273v/kaos-ml-core/blob/main/CHANGELOG.md"
+
 [dependency-groups]
+# Cross-package dev baseline matches kaos-graph 0.1.0a2 (audit A2-#9):
+# pytest 9.x, pytest-asyncio 1.3.x, pytest-cov 7.x, ty 0.0.34. The
+# integration tier consumes published kaos-pdf to extract real-PDF
+# fixtures for the v0 vertical slice.
 dev = [
-    "markdown-it-py[plugins]>=3.0",
-    "maturin>=1.12.6",
-    "pytest>=8.3",
-    "pytest-asyncio>=0.25",
-    "pytest-benchmark>=5.0",
-    "ruff>=0.11",
-    "ty>=0.0.1a17",
-    # Integration test deps only — used by tests/integration/test_v0_vertical_slice.py
-    # to extract real PDFs as ContentDocument fixtures.
-    "kaos-pdf",
+  "kaos-pdf>=0.1.0a1",
+  "markdown-it-py[plugins]>=3.0",
+  "maturin>=1.12.6",
+  "pytest>=9.0.3",
+  "pytest-asyncio>=1.3.0",
+  "pytest-benchmark>=5.0",
+  "pytest-cov>=7.1.0",
+  "ruff>=0.15.12",
+  "ty>=0.0.34,<0.1",
 ]
 
 [tool.maturin]
 python-source = "python"
 module-name = "kaos_ml_core._rust"
 features = ["pyo3/extension-module"]
+include = [
+  { path = "LICENSE", format = "sdist" },
+  { path = "NOTICE", format = "sdist" },
+  { path = "CHANGELOG.md", format = "sdist" },
+  { path = "SECURITY.md", format = "sdist" },
+]
+# Strip runtime artifacts from sdist + wheel.
+exclude = [
+  { path = ".kaos-vfs/**", format = "sdist" },
+  { path = "target/**", format = "sdist" },
+  { path = ".pytest_cache/**", format = "sdist" },
+  { path = ".ruff_cache/**", format = "sdist" },
+  { path = ".benchmarks/**", format = "sdist" },
+  { path = ".venv/**", format = "sdist" },
+  { path = "htmlcov/**", format = "sdist" },
+  { path = ".kaos-vfs/**", format = "wheel" },
+  { path = "target/**", format = "wheel" },
+]
 
 [tool.pytest.ini_options]
+minversion = "8.0"
 testpaths = ["tests"]
 asyncio_mode = "auto"
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+]
 markers = [
-    "unit: focused unit checks",
-    "integration: end-to-end checks (live LLM calls, real PDFs)",
+  "unit: focused unit checks",
+  "integration: end-to-end checks (real PDFs, real corpora)",
+  "live: requires live API credentials (LLM, embeddings, search)",
+  "benchmark: pytest-benchmark workloads (excluded from default unit runs)",
+  "slow: tests that take >1s to run",
 ]
 
 [tool.ruff]
@@ -83,12 +149,21 @@ include = ["python/kaos_ml_core", "tests"]
 
 [tool.uv]
 package = true
+# KMC-006: uv cache keys so the _rust extension rebuilds whenever
+# pyproject.toml, Cargo.toml, or any *.rs file under the package changes.
+cache-keys = [
+  { file = "pyproject.toml" },
+  { file = "Cargo.toml" },
+  { file = "**/*.rs" },
+]
 
+# Editable sibling paths for the monorepo only. Stripped at promotion time
+# per docs/oss/00-overview/decisions.md D015 — the per-module repo's
+# pyproject.toml uses pure PyPI version pins.
 [tool.uv.sources]
 kaos-core = { path = "../kaos-core", editable = true }
 kaos-content = { path = "../kaos-content", editable = true }
 kaos-nlp-core = { path = "../kaos-nlp-core", editable = true }
-kaos-nlp-transformers = { path = "../kaos-nlp-transformers", editable = true }
 kaos-llm-core = { path = "../kaos-llm-core", editable = true }
 kaos-mcp = { path = "../kaos-mcp", editable = true }
 kaos-pdf = { path = "../kaos-pdf", editable = true }

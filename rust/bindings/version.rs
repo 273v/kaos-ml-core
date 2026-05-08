@@ -9,7 +9,7 @@ fn version() -> &'static str {
 }
 
 /// Register the `version` callable on the parent `_rust` module.
-pub fn register_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub(crate) fn register_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
     Ok(())
 }

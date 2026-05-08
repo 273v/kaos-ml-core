@@ -272,7 +272,7 @@ class CorpusIndex:
             ranked: list[RankedResult] = await self._reranker.rerank(query, hits, top_k=top_k)
             # Repackage RankedResult back into the hit shape retrievers return;
             # this keeps retrieve()'s return type stable across rerank on/off.
-            hits = [r.hit for r in ranked]  # type: ignore[attr-defined]
+            hits = [r.hit for r in ranked]  # ty: ignore[unresolved-attribute]
 
         return hits
 

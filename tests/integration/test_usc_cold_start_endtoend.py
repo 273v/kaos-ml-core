@@ -47,7 +47,7 @@ from tests.integration._usc_helpers import (
 )
 from tests.integration.test_usc_llm_label_quality import LLM_INSTRUCTION
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.live]
 
 
 # Hard floor: the LLM-labeled cold-start classifier must come within

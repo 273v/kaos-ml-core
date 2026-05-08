@@ -31,7 +31,7 @@ from tests.integration._usc_helpers import (
     load_corpus_and_features,
 )
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.live]
 
 
 # Single-paragraph corpora produced by usc_record_to_document mean each

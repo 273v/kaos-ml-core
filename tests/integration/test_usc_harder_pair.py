@@ -43,7 +43,7 @@ from tests.integration._usc_helpers import (
     print_report,
 )
 
-pytestmark = pytest.mark.integration
+pytestmark = [pytest.mark.integration, pytest.mark.live]
 
 
 HARDER_TITLES: tuple[int, ...] = (TITLE_BANKS, TITLE_TAX)

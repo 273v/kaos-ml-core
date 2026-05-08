@@ -24,14 +24,17 @@ def embed_corpus(
     *,
     model: str | None = None,
     batch_size: int = 32,
+    settings: KaosMLCoreSettings | None = None,
 ) -> np.ndarray:
     """Produce a dense feature matrix for a Corpus via kaos-nlp-transformers.
 
     Args:
         corpus: A Corpus built from one or more ContentDocuments.
         model: Embedding model id. Defaults to
-            ``KaosMLCoreSettings.default_embed_model`` (``BAAI/bge-small-en-v1.5``).
+            ``settings.default_embed_model`` (``BAAI/bge-small-en-v1.5``).
         batch_size: Inference batch size passed to the backend.
+        settings: Module settings; defaults to
+            ``KaosMLCoreSettings.resolve(None)`` (env-resolved).
 
     Returns:
         A float32 numpy array of shape ``(len(corpus), embedding_dim)``.
@@ -56,8 +59,8 @@ def embed_corpus(
         raise FeatureError(msg) from exc
 
     EmbeddingModel = transformers.EmbeddingModel
-    settings = KaosMLCoreSettings()
-    model_id = model or settings.default_embed_model
+    resolved = KaosMLCoreSettings.resolve(settings)
+    model_id = model or resolved.default_embed_model
     em = EmbeddingModel.load(model_id)
     texts = [u.text for u in corpus]
     vecs = em.embed(texts, batch_size=batch_size)
