@@ -1,0 +1,76 @@
+# Pre-commit hooks for kaos-ml-core.
+#
+# Install:
+#   uvx pre-commit install
+#
+# Run on every commit (automatic after install) or manually on the whole tree:
+#   uvx pre-commit run --all-files
+#
+# Hook versions are pinned for reproducibility. The CI workflow runs the same
+# checks so local hooks just shorten the feedback loop — they are not a
+# substitute for CI.
+
+repos:
+  # ───────────── general hygiene ─────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^LICENSE$
+      - id: end-of-file-fixer
+        exclude: ^LICENSE$
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: detect-private-key
+
+  # ───────────── ruff (format + lint) ─────────────
+  # Pinned to match the dev group in pyproject.toml to avoid drift between
+  # local hooks and `uv sync --group dev`.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff-format
+        files: ^(python/kaos_ml_core|tests)/.*\.py$
+      - id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^(python/kaos_ml_core|tests)/.*\.py$
+
+  # ───────────── ty (type check) ─────────────
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty check
+        entry: uv run ty check python/kaos_ml_core tests
+        language: system
+        types: [python]
+        pass_filenames: false
+        require_serial: true
+
+  # ───────────── Rust hygiene ─────────────
+  # cargo fmt + clippy are cheap on PRs but slow without sccache locally.
+  # Run them on push (not every commit) via the `--hook-stage push` option,
+  # or skip them locally with `git commit --no-verify` and let CI catch.
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt --check
+        entry: cargo fmt --check
+        language: system
+        types: [rust]
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-push]
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: cargo clippy --no-default-features --all-targets -- -D warnings
+        language: system
+        types: [rust]
+        pass_filenames: false
+        require_serial: true
+        stages: [pre-push]
