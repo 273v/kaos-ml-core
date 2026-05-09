@@ -2,6 +2,9 @@
 
 <!-- One-paragraph description of what this PR does and why it's needed. -->
 
+See [CONTRIBUTING.md](https://github.com/273v/kaos-ml-core/blob/main/CONTRIBUTING.md)
+for setup, quality gates, and engineering standards.
+
 ## Type of change
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
@@ -16,6 +19,7 @@
 - [ ] **Rust** — `cargo fmt --check`, `cargo clippy --no-default-features --all-targets -- -D warnings`, `cargo test --no-default-features --lib`
 - [ ] **Python** — `uv run ruff format --check python/kaos_ml_core tests`, `uv run ruff check python/kaos_ml_core tests`, `uv run ty check python/kaos_ml_core tests`, `uv run pytest -m "not live and not network and not slow" tests/`
 - [ ] **Build** — `uv run maturin develop --release` succeeds
+- [ ] Public API, CLI behavior, package metadata, fixtures, and release impact considered
 - [ ] `CHANGELOG.md` updated under `[Unreleased]` if user-visible
 
 ## Related issues
