@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Per-wheel smoke test in release.yml** — every built wheel now
+  imports its target package on its target runner before
+  publish-pypi gates. Catches PE/ELF/Mach-O dyld issues, ABI
+  mismatches, and missing-runtime-dep surprises that the build step
+  alone can't see. Pre-fix, all 5 wheels uploaded blind.
+
+### Removed
+
+- **musllinux wheels (Alpine Linux / musl libc)** dropped from the
+  release.yml matrix. ``kaos_ml_core-*-cp313-abi3-musllinux_1_2_x86_64.whl``
+  and ``-aarch64.whl`` will not ship on the next release. Family-
+  consistency move (matches kaos-nlp-core / kaos-graph /
+  kaos-nlp-transformers): downstream sibling kaos-nlp-transformers
+  can't ship musllinux because ort's ``download-binaries`` feature
+  pulls Microsoft's official libonnxruntime which is glibc-only.
+  Shipping musllinux for kaos-ml-core while the ML sibling can't
+  install on Alpine creates a fragmented user experience. Pre-1.0
+  alpha allows the platform reduction; the 0.1.0a1 release retains
+  its musllinux wheels on PyPI for standalone Alpine users
+  (``pip install kaos-ml-core==0.1.0a1``).
+
 ## [0.1.0a1] — 2026-05-08
 
 First public alpha. Closes the eight `audit-01` findings (KMC-001..008,

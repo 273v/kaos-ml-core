@@ -95,12 +95,23 @@ jobs:
           retention-days: 30
 
   # ────────────── Wheel matrix ──────────────
-  # 8 wheels per release, per D017 (docs/oss/30-rust-packaging/wheel-matrix.md):
-  #   - Linux x86_64 manylinux + musllinux
-  #   - Linux aarch64 manylinux + musllinux
+  # 5 wheels per release:
+  #   - Linux x86_64 manylinux_2_28
+  #   - Linux aarch64 manylinux_2_28
   #   - macOS arm64
   #   - Windows x86_64
   #   - Windows arm64
+  #
+  # musllinux deliberately skipped to keep the kaos-* family deployment
+  # story consistent. kaos-nlp-transformers can't ship musllinux —
+  # ort/download-binaries pulls Microsoft's official libonnxruntime
+  # which is glibc-only — and shipping kaos-ml-core / kaos-graph / etc.
+  # on Alpine while the downstream sibling can't install creates a
+  # fragmented user experience. Pre-1.0 alpha allows the platform
+  # reduction; downstream Alpine consumers should pin to the last
+  # release that included musllinux wheels until either ort gains
+  # musl support or we switch ML runtimes.
+  #
   # macOS x86_64 deliberately skipped (Apple ended Intel sales in 2023).
   wheels:
     name: ${{ matrix.target }} ${{ matrix.linux-tag && '(' || '' }}${{ matrix.linux-tag }}${{ matrix.linux-tag && ')' || '' }}
@@ -113,18 +124,10 @@ jobs:
             target: x86_64-unknown-linux-gnu
             linux-tag: manylinux_2_28
             manylinux: "2_28"
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            linux-tag: musllinux_1_2
-            manylinux: musllinux_1_2
           - os: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
             linux-tag: manylinux_2_28
             manylinux: "2_28"
-          - os: ubuntu-24.04-arm
-            target: aarch64-unknown-linux-musl
-            linux-tag: musllinux_1_2
-            manylinux: musllinux_1_2
           - os: macos-14
             target: aarch64-apple-darwin
             linux-tag: ""
@@ -151,13 +154,51 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          # Empty for macOS/Windows; "2_28" or "musllinux_1_2" for Linux.
+          # Empty for macOS/Windows; "2_28" for Linux.
           manylinux: ${{ matrix.manylinux }}
           args: --release --strip --out dist
           # Don't restore from cache — release builds must be reproducible
           # from a clean state (per docs/oss/30-rust-packaging/wheel-matrix.md).
           rust-toolchain: stable
           sccache: "true"
+
+      - name: Smoke test the wheel
+        # Runs on every built wheel; each matrix leg's runner IS the
+        # target platform so the cdylib gets exercised on its actual
+        # native ABI before publish. Catches PE/ELF/Mach-O dyld
+        # issues, ABI mismatches, and missing-runtime-dep surprises
+        # the build step alone can't see. publish-pypi gates on
+        # `needs: [sdist, wheels]`, so a smoke failure blocks the
+        # release rather than shipping a broken wheel.
+        #
+        # `shell: bash` for multi-line `run:` / `[[ -f ... ]]` on
+        # Windows (Git Bash preinstalled). PYTHONUTF8 + PYTHONIOENCODING
+        # handle cp1252 default codepage. Lessons from the kaos-*
+        # family ci.yml cross-OS work.
+        shell: bash
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: utf-8
+        run: |
+          python -m venv .smoke-venv
+          if [[ -f .smoke-venv/bin/python ]]; then
+            PY=".smoke-venv/bin/python"
+          else
+            PY=".smoke-venv/Scripts/python"
+          fi
+          "$PY" -m pip install --upgrade pip
+          "$PY" -m pip install dist/*.whl
+          # Touch the cdylib directly via _rust.__version__ so a load
+          # failure surfaces here rather than leaking past `import
+          # kaos_ml_core` (the top-level __init__.py also imports from
+          # _rust, so this is belt-and-suspenders).
+          "$PY" -c "
+          import kaos_ml_core as k
+          assert k.__version__, 'version missing from wheel'
+          from kaos_ml_core._rust import __version__ as rust_version
+          assert rust_version, 'cdylib __version__ missing — extension load failed'
+          print(f'kaos-ml-core {k.__version__} (cdylib {rust_version}): smoke OK')
+          "
 
       - name: Upload wheel
         uses: actions/upload-artifact@v7
