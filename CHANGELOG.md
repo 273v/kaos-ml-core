@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI: Python 3.15 ``pillow`` source-build failed for missing
+  libjpeg/zlib headers.** No published Pillow wheel exists for 3.15
+  (pre-release) yet, so uv source-builds. Pillow's setup.py raises
+  ``RequiredDependencyException: jpeg`` immediately when the system
+  dev packages are absent. The CI workflow was missing the apt-get
+  install step entirely (uses `ubuntu-latest`, not the self-hosted
+  runner). Added the standard image-codec apt-get list (libjpeg,
+  zlib, tiff, freetype, lcms2, webp, openjp2, imagequant) gated on
+  ``runner.os == 'Linux'``. Also normalised the Install dependencies
+  step to ``shell: bash`` for cross-OS consistency with the Run
+  tests step. The 3.15 leg stays ``experimental: true``. Files:
+  ``.github/workflows/ci.yml``.
+
 ### Added
 
 - **Per-wheel smoke test in release.yml** — every built wheel now
