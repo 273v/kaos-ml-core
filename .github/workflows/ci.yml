@@ -160,7 +160,32 @@ jobs:
       - name: Install Python ${{ matrix.python-version }}
         run: uv python install --preview ${{ matrix.python-version }}
 
+      - name: Install system libraries for source-built C extensions
+        # Linux-only: macOS / Windows runners don't have apt-get and
+        # use cached wheels anyway. The 3.13 / 3.14 stable lanes also
+        # hit cached wheels on Linux — this step is effectively a
+        # no-op there.
+        #
+        # 3.15 (pre-release) currently has no published Pillow wheel,
+        # so uv source-builds it. Pillow's setup.py raises
+        # ``RequiredDependencyException: jpeg`` if libjpeg + zlib
+        # headers are missing, and the same applies for the other
+        # codecs in the [images] extra (used transitively by
+        # kaos-content / kaos-ml-core's preprocessing path). See:
+        # https://pillow.readthedocs.io/en/latest/installation/building-from-source.html
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libjpeg-dev zlib1g-dev libtiff-dev libfreetype6-dev \
+            liblcms2-dev libwebp-dev libopenjp2-7-dev libimagequant-dev
+
       - name: Install dependencies
+        # `shell: bash` for cross-OS consistency with Run tests below
+        # (PowerShell mis-parses `\` continuations on Windows). The
+        # uv sync line is single-line today, but normalising the shell
+        # avoids drift if it gains continuations later.
+        shell: bash
         run: uv sync --group dev --python ${{ matrix.python-version }}
 
       - name: Build PyO3 extension (maturin develop --release)
