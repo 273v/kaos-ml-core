@@ -276,7 +276,10 @@ jobs:
           # Install with [mcp] so register_ml_tools is reachable; the
           # actual ML-pipeline smoke (embed + train + predict) lives in
           # the integration tests, not in this fast-CI smoke.
-          uv pip install --python /tmp/smoke/bin/python "dist/kaos_ml_core-0.1.0a1-cp313-abi3-linux_x86_64.whl[mcp]"
+          # Glob the built wheel so the smoke step survives version bumps;
+          # the previous hardcoded ``-0.1.0a1-`` reference broke on every
+          # subsequent release.
+          uv pip install --python /tmp/smoke/bin/python "$(ls dist/kaos_ml_core-*-cp313-abi3-linux_x86_64.whl)[mcp]"
           /tmp/smoke/bin/python -c "
           import kaos_ml_core
           from kaos_ml_core import (
