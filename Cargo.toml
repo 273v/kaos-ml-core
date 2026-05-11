@@ -3,7 +3,7 @@ name = "kaos-ml-core"
 # Cargo SemVer pre-release — maturin emits PEP 440 "0.1.0a1" on the
 # Python wheel side. Version-coupling pattern documented in
 # docs/oss/30-rust-packaging/version-coupling.md (Option C).
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 edition = "2021"
 rust-version = "1.83"
 license = "Apache-2.0"
