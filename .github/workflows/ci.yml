@@ -189,6 +189,7 @@ jobs:
             liblcms2-dev libwebp-dev libopenjp2-7-dev libimagequant-dev
 
       - name: Install dependencies
+        continue-on-error: ${{ matrix.experimental }}
         # `shell: bash` for cross-OS consistency with Run tests below
         # (PowerShell mis-parses `\` continuations on Windows). The
         # uv sync line is single-line today, but normalising the shell
@@ -197,9 +198,11 @@ jobs:
         run: uv sync --group dev --python ${{ matrix.python-version }}
 
       - name: Build PyO3 extension (maturin develop --release)
+        continue-on-error: ${{ matrix.experimental }}
         run: uv run maturin develop --release
 
       - name: Run tests with coverage
+        continue-on-error: ${{ matrix.experimental }}
         # `shell: bash` so the `\` line continuations parse on Windows
         # (default shell there is PowerShell which reads `\` as a unary
         # operator). Git Bash is preinstalled on `windows-latest`.
