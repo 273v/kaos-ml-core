@@ -7,7 +7,7 @@ and documented. Participation in this project is governed by the
 ## Setup
 
 ```bash
-uv sync --group dev
+uv sync --group dev --extra transformers --extra mcp
 uvx pre-commit install
 ```
 
