@@ -159,6 +159,7 @@ include = ["python/kaos_ml_core", "tests"]
 
 [tool.uv]
 package = true
+exclude-newer = "72 hours"
 # KMC-006: uv cache keys so the _rust extension rebuilds whenever
 # pyproject.toml, Cargo.toml, or any *.rs file under the package changes.
 cache-keys = [
@@ -169,3 +170,20 @@ cache-keys = [
 
 # Per-module repo: no [tool.uv.sources] — all kaos-* deps resolve from
 # PyPI per docs/oss/00-overview/decisions.md D015.
+[tool.uv.exclude-newer-package]
+"kaos-citations" = false
+"kaos-content" = false
+"kaos-core" = false
+"kaos-graph" = false
+"kaos-llm-client" = false
+"kaos-llm-core" = false
+"kaos-mcp" = false
+"kaos-ml-core" = false
+"kaos-names" = false
+"kaos-nlp-core" = false
+"kaos-nlp-transformers" = false
+"kaos-office" = false
+"kaos-pdf" = false
+"kaos-source" = false
+"kaos-tabular" = false
+"kaos-web" = false
