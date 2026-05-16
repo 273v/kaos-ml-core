@@ -587,7 +587,7 @@ class TrainTool(KaosTool):
         # Look up the embed model's revision for reproducibility.
         embed_revision = ""
         try:
-            from kaos_nlp_transformers.models import REGISTRY
+            from kaos_nlp_transformers import REGISTRY
 
             entry = REGISTRY.get("BAAI/bge-small-en-v1.5")
             embed_revision = entry.revision if entry else ""
