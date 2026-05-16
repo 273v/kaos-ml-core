@@ -8,6 +8,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.1.0a3] — 2026-05-16
+
+### Fixed
+
+- **`kaos_nlp_transformers` REGISTRY import path corrected.**
+  `tools.py` referenced `kaos_nlp_transformers.models.REGISTRY`,
+  which broke when `kaos-nlp-transformers` 0.2.0 reorganized its
+  public surface to expose `REGISTRY` at the top level. The
+  Pipeline-train tool now imports from the documented public
+  path `kaos_nlp_transformers.REGISTRY`. Behavior is unchanged
+  on the happy path; the previous ImportError-swallow now
+  succeeds and records the embed-model revision in the Pipeline
+  envelope.
+
+### Changed
+
+- **Lockfile refreshed across kaos-* siblings.** Pinned sibling
+  package versions catch up to today's releases — `kaos-core`
+  → 0.1.0a7, `kaos-content` → 0.1.0a8, `kaos-llm-client` →
+  0.1.0a4, `kaos-llm-core` → 0.1.0a12, `kaos-mcp` → 0.1.0a4,
+  `kaos-nlp-core` → 0.1.0a8, `kaos-nlp-transformers` → 0.2.0a8,
+  `kaos-pdf` → 0.1.0a4. The published base-install constraints
+  are unchanged.
+- **Significantly slimmer transitive dependency footprint.**
+  `kaos-nlp-transformers` 0.2.0a8 statically links the ONNX
+  Runtime into the Rust cdylib and ships HuggingFace tokenizers
+  via the Rust crate, so the transitive Python deps for
+  `onnxruntime`, `protobuf`, `tokenizers`, `py-rust-stemmers`,
+  `mmh3`, `loguru`, `requests`, `urllib3`, and `win32-setctime`
+  are no longer pulled in.
+
+### Infrastructure
+
+- Public-PR CI workflows hardened.
+- Dependabot migrated to the uv ecosystem with a 72-hour cooldown
+  matching the rest of the kaos-* org.
+- CycloneDX SBOM release asset (F8).
+- CODEOWNERS expansion + Dependabot + OpenSSF Scorecard.
+- Smoke-test wheel filename globbed in CI so it survives
+  version bumps.
+
+### Documentation
+
+- Fixture provenance README backfilled (audit-03 D9).
+
+
 ## [0.1.0a2] — 2026-05-11
 
 ### Fixed
