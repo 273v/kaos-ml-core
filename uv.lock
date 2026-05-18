@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.13"
 
 [options]
-exclude-newer = "2026-05-13T20:49:10.770178205Z"
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "PT72H"
 
 [options.exclude-newer-package]
@@ -468,16 +468,16 @@ wheels = [
 
 [[package]]
 name = "kaos-content"
-version = "0.1.0a8"
+version = "0.1.0a10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "kaos-core" },
     { name = "pydantic" },
     { name = "uuid6", marker = "python_full_version < '3.14'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9f/07/ab62078702b7c6e47cf2dc1759cfdb18a2382eface3ff4e8b51cffb6be77/kaos_content-0.1.0a8.tar.gz", hash = "sha256:6f61690ceba454319c1117b97721c3262d2c7cc0caaccff59530c897b4a0aba3", size = 1073110, upload-time = "2026-05-16T20:48:58.405Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/f6/17dea39473967f9267480b76866f9f28d1b9157b51888061dcdaf4f5e4c0/kaos_content-0.1.0a10.tar.gz", hash = "sha256:490c55ac0392310582654bfffc66cd387b03047221207a16cdd08f37a488caac", size = 1075971, upload-time = "2026-05-18T03:08:50.933Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c3/b3/aaffdff07b8b24f11b9193ef1ceecf623200d242b60c0821f9eb60144034/kaos_content-0.1.0a8-py3-none-any.whl", hash = "sha256:1acbec7ca469daeb1bdfab75320c845ce2372ac4dec0fb018a62bcebe6165123", size = 262510, upload-time = "2026-05-16T20:48:56.799Z" },
+    { url = "https://files.pythonhosted.org/packages/34/f9/7324b9aebd9893db30d826244de1ec7313b48ccc31fafebecccd98eafc20/kaos_content-0.1.0a10-py3-none-any.whl", hash = "sha256:7a3790b43eeb99ea34f00ed76bcafe8a7b671ca17316d240f43c39e65f36abea", size = 264026, upload-time = "2026-05-18T03:08:49.354Z" },
 ]
 
 [package.optional-dependencies]
@@ -494,16 +494,16 @@ markdown = [
 
 [[package]]
 name = "kaos-core"
-version = "0.1.0a7"
+version = "0.1.0a10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e5/3d/dfb8f766e706893870977fc035582b37c6b2fa63f4ecf81190dbae20f53f/kaos_core-0.1.0a7.tar.gz", hash = "sha256:df249e194f53c3d9ccec0dbd0497c12e99b7daa750a780b356cc1a5118776d27", size = 169231, upload-time = "2026-05-15T03:48:39.203Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/fa/7fe7eba42dae8acdb036a1863aec8d009f9bd077258ac8937e515c3c706d/kaos_core-0.1.0a10.tar.gz", hash = "sha256:6237422136b352d9a6805ccf634714d6b086b39a6551d77e779a9fd9eba0bae7", size = 186012, upload-time = "2026-05-18T02:19:54.659Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/7d/1cdb1bb0054e543b5b86b93c07ba8b067fcc178ae2c41062c8c68acb2255/kaos_core-0.1.0a7-py3-none-any.whl", hash = "sha256:08f76a0024f9ae339b6c54f6d9fedb5e1185afab6f52692732a6d981f1e52705", size = 133071, upload-time = "2026-05-15T03:48:37.827Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/fe/13b14e98098b5e5e9854b9b6228ed7e5792b6b9708c19615b9735530c913/kaos_core-0.1.0a10-py3-none-any.whl", hash = "sha256:5690a55dd4720a68083328dad20c6d59f13fcc6dc2d557c710936a1f48257f2f", size = 143617, upload-time = "2026-05-18T02:19:52.861Z" },
 ]
 
 [[package]]
