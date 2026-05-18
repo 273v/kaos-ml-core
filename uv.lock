@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.13"
 
 [options]
-exclude-newer = "2026-05-13T20:49:10.770178205Z"
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
 exclude-newer-span = "PT72H"
 
 [options.exclude-newer-package]
@@ -494,16 +494,16 @@ markdown = [
 
 [[package]]
 name = "kaos-core"
-version = "0.1.0a7"
+version = "0.1.0a10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e5/3d/dfb8f766e706893870977fc035582b37c6b2fa63f4ecf81190dbae20f53f/kaos_core-0.1.0a7.tar.gz", hash = "sha256:df249e194f53c3d9ccec0dbd0497c12e99b7daa750a780b356cc1a5118776d27", size = 169231, upload-time = "2026-05-15T03:48:39.203Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/fa/7fe7eba42dae8acdb036a1863aec8d009f9bd077258ac8937e515c3c706d/kaos_core-0.1.0a10.tar.gz", hash = "sha256:6237422136b352d9a6805ccf634714d6b086b39a6551d77e779a9fd9eba0bae7", size = 186012, upload-time = "2026-05-18T02:19:54.659Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/7d/1cdb1bb0054e543b5b86b93c07ba8b067fcc178ae2c41062c8c68acb2255/kaos_core-0.1.0a7-py3-none-any.whl", hash = "sha256:08f76a0024f9ae339b6c54f6d9fedb5e1185afab6f52692732a6d981f1e52705", size = 133071, upload-time = "2026-05-15T03:48:37.827Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/fe/13b14e98098b5e5e9854b9b6228ed7e5792b6b9708c19615b9735530c913/kaos_core-0.1.0a10-py3-none-any.whl", hash = "sha256:5690a55dd4720a68083328dad20c6d59f13fcc6dc2d557c710936a1f48257f2f", size = 143617, upload-time = "2026-05-18T02:19:52.861Z" },
 ]
 
 [[package]]
@@ -523,7 +523,7 @@ wheels = [
 
 [[package]]
 name = "kaos-llm-core"
-version = "0.1.0a12"
+version = "0.1.0a14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "kaos-content" },
@@ -532,9 +532,9 @@ dependencies = [
     { name = "kaos-nlp-core" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2d/c3/7ae9e2e6a128249f990a0b1a7fd7649e8592665792acc72753a142b1d1ce/kaos_llm_core-0.1.0a12.tar.gz", hash = "sha256:764fc2b618a85f9ae24f7a0d89b08782ed2de99cab195eb33a4eb5069fa2bd90", size = 688995, upload-time = "2026-05-16T15:07:34.827Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/92/cca583029661481708c92eb16f7c930d0daf03852a122d9ec2a474846352/kaos_llm_core-0.1.0a14.tar.gz", hash = "sha256:392f0f26ca36d2adca7638377f5f1b10a91233e8c175cdce9eca6b52ba62d0bf", size = 691096, upload-time = "2026-05-18T03:06:25.629Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/4a/6cbd715908f23e9b7fedf2fa840c79f19feaaaecf708efdabb8520a5b494/kaos_llm_core-0.1.0a12-py3-none-any.whl", hash = "sha256:ef3b69cb4af5daffdc4e10fdc8ed6d2d2a4148fed13b89f0d90de9f5ea662ca2", size = 552298, upload-time = "2026-05-16T15:07:33.28Z" },
+    { url = "https://files.pythonhosted.org/packages/e7/3a/f5aeb3ad2f2adac010b7cb29d7ee28f5dddd3d04553f139a9c14b231bdae/kaos_llm_core-0.1.0a14-py3-none-any.whl", hash = "sha256:af54025176b077802a6cc927f56ccc78d5425c4c1d35dc5882d5e87f7de641f3", size = 553075, upload-time = "2026-05-18T03:06:23.507Z" },
 ]
 
 [[package]]
