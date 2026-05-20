@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.1.0a4] — 2026-05-20
+
+### Changed — kaos-core 0.1.0a12 catch-up (WU-D.2)
+
+- Layer 1 Rust+Python catch-up release per the 0.1.0 GA plan
+  (WU-D.2 — largest delta in the layer). Runtime pin bump:
+  `kaos-core>=0.1.0a4` → `kaos-core>=0.1.0a12,<0.2` (post-URI redesign
+  + 0.1.0a12 capability type). No source changes required — this
+  package's Rust core has no kaos-core dependency at the boundary, and
+  the Python wrappers operate on `kaos-content` AST primitives that
+  already align with the current contract.
+- `uv.lock` refreshed: `kaos-core` 0.1.0a10 → 0.1.0a12.
+- Linux x86_64 `maturin develop --release` build is green; CI matrix
+  builds macOS arm64 + Windows wheels on tag push.
+
+### Verified
+- Rust QA: `cargo fmt`, `cargo clippy --all-targets -- -D warnings`,
+  `cargo test --no-default-features` (1 test passed; this crate's
+  Rust surface is a version stub).
+- Python QA (with `--extra transformers --extra mcp`):
+  `ruff format --check`, `ruff check`, `ty check`,
+  `pytest -m "not live and not network and not slow and not integration"`
+  (199 passed, 1 skipped — "kaos-nlp-transformers is installed; cannot
+  test import-error path", 8 deselected).
+
+
 ## [0.1.0a3] — 2026-05-16
 
 ### Fixed
