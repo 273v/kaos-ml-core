@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.1.0rc1] — 2026-05-20
+
+### Changed — WU-J of 0.1.0 GA plan
+
+- Release candidate; pin floor raised to `>=0.1.0rc1,<0.2` across
+  kaos-* deps; freezes public API ahead of 0.1.0 GA.
+- Cargo `[package].version` bumped `0.1.0-alpha.4` → `0.1.0-rc.1`;
+  Python wheel metadata follows via maturin (`0.1.0rc1`).
+- Runtime pins: `kaos-core`, `kaos-content`, `kaos-nlp-core` raised
+  to `>=0.1.0rc1,<0.2`.
+- Optional extras: `[transformers]` (`kaos-nlp-transformers`),
+  `[llm]` (`kaos-llm-core`), `[mcp]` (`kaos-mcp`) all raised to
+  `>=0.1.0rc1,<0.2`. The `<0.2` ceiling is load-bearing for
+  `kaos-nlp-transformers` (legacy 0.2.0a* line still on PyPI).
+- Dev pin: `kaos-pdf` raised to `>=0.1.0rc1,<0.2`.
+- `uv.lock` refreshed: kaos-core, kaos-content, kaos-llm-client,
+  kaos-llm-core, kaos-mcp, kaos-nlp-core, kaos-nlp-transformers,
+  kaos-pdf all → 0.1.0rc1.
+
+### Verified
+
+- Rust QA: `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`,
+  `cargo test --no-default-features` (1 passed), `maturin develop --release`.
+- Python QA (with `--extra transformers --extra mcp`):
+  `ruff format --check`, `ruff check`, `ty check`,
+  `pytest -m "not live and not network and not slow and not integration"`
+  → 199 passed, 1 skipped, 8 deselected.
+
+
 ## [0.1.0a4] — 2026-05-20
 
 ### Changed — kaos-core 0.1.0a12 catch-up (WU-D.2)

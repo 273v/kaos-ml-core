@@ -47,9 +47,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "kaos-core>=0.1.0a12,<0.2",
-  "kaos-content>=0.1.0a2",
-  "kaos-nlp-core>=0.1.0a2",
+  "kaos-core>=0.1.0rc1,<0.2",
+  "kaos-content>=0.1.0rc1,<0.2",
+  "kaos-nlp-core>=0.1.0rc1,<0.2",
   "numpy>=2.1",
   "scipy>=1.14.1",
   "scikit-learn>=1.8",
@@ -69,12 +69,12 @@ dependencies = [
 # it. Without [transformers], you can still use Corpus, evaluate(),
 # split, threshold, and the classifier directly with your own feature
 # matrix.
-transformers = ["kaos-nlp-transformers>=0.1.0a2"]
+transformers = ["kaos-nlp-transformers>=0.1.0rc1,<0.2"]
 # LLM cold-start labeling via kaos-llm-core's classify program.
-llm = ["kaos-llm-core>=0.1.0a3"]
+llm = ["kaos-llm-core>=0.1.0rc1,<0.2"]
 # MCP tool surface — register_ml_tools(runtime). Required to expose the
 # 11 MCP tools to an agent.
-mcp = ["kaos-mcp>=0.1.0a2"]
+mcp = ["kaos-mcp>=0.1.0rc1,<0.2"]
 
 [project.scripts]
 kaos-ml = "kaos_ml_core.cli:main"
@@ -93,7 +93,7 @@ Changelog = "https://github.com/273v/kaos-ml-core/blob/main/CHANGELOG.md"
 # integration tier consumes published kaos-pdf to extract real-PDF
 # fixtures for the v0 vertical slice.
 dev = [
-  "kaos-pdf>=0.1.0a1",
+  "kaos-pdf>=0.1.0rc1,<0.2",
   "markdown-it-py[plugins]>=3.0",
   "maturin>=1.12.6",
   "pytest>=9.0.3",
