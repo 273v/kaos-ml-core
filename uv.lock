@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.13"
 
 [options]
-exclude-newer = "2026-05-17T22:14:47.603352725Z"
+exclude-newer = "2026-05-18T00:33:30.736779175Z"
 exclude-newer-span = "PT72H"
 
 [options.exclude-newer-package]
@@ -468,16 +468,16 @@ wheels = [
 
 [[package]]
 name = "kaos-content"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "kaos-core" },
     { name = "pydantic" },
     { name = "uuid6", marker = "python_full_version < '3.14'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2d/cc/a71df653ee5a0b9673a943c70fc750be9d8e961161adf4e9759bc0039f40/kaos_content-0.1.0rc1.tar.gz", hash = "sha256:f5f934bbb1c4610d2b248b65037ee18de0bc56d4756817fc7ae387cf7498b611", size = 1098156, upload-time = "2026-05-20T21:21:00.874Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/5e/3cc6db536a819981fc49159228b95e66b891d3f4dcd7c4f6a5fff56b7968/kaos_content-0.1.0.tar.gz", hash = "sha256:d97e5199b234953fb1ed45df64f57c090e9d013533743c010a0f493a8a340b7e", size = 1098263, upload-time = "2026-05-20T23:54:02.342Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/67/033fb9a057471cc5658bc7e1fdb7f91b4b00666c425f23ce6ad42acaea2c/kaos_content-0.1.0rc1-py3-none-any.whl", hash = "sha256:04eb449b18d70f18ad535dd8fc3b2d31313f4e498becf108babfd2a9f3377710", size = 267585, upload-time = "2026-05-20T21:20:58.647Z" },
+    { url = "https://files.pythonhosted.org/packages/a4/3f/e592a1da97d7ece8d113ef23c98c8d94c593cfcf16ff4e41f3a1480b7676/kaos_content-0.1.0-py3-none-any.whl", hash = "sha256:0240c9d7f58364ab94fb6460febbf9d382b78723b0a7e1a3ff26b079da8c272a", size = 267543, upload-time = "2026-05-20T23:54:00.894Z" },
 ]
 
 [package.optional-dependencies]
@@ -494,21 +494,21 @@ markdown = [
 
 [[package]]
 name = "kaos-core"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7e/56/97682b2cfeaeb1c9806b39b32b702a2dbe1a2695cd0e2c1012e30a4cfa80/kaos_core-0.1.0rc1.tar.gz", hash = "sha256:a84f52ac55d296fa7979d766ff157cc6164764ca42d93e45df78dbf8d53a42ef", size = 197743, upload-time = "2026-05-20T19:53:32.689Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5a/b7/e60e6d6a05010f77e7535b09528f9efa994d9594abde9b26feecea20f059/kaos_core-0.1.0.tar.gz", hash = "sha256:5535f80661492101caa1fefd536c5f3c6a3d3597c6eb1f505e974907931c6945", size = 197876, upload-time = "2026-05-20T23:04:17.606Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/61/ebb1da64a3e0c540ab16bb5e1b2d54adc9bc5366d0ed806f45cf15d0ed47/kaos_core-0.1.0rc1-py3-none-any.whl", hash = "sha256:0a691b6e4c5688368de2e0112138cfa46b3827887df728f19df55bc2abdf44c1", size = 151389, upload-time = "2026-05-20T19:53:30.723Z" },
+    { url = "https://files.pythonhosted.org/packages/44/cf/ffaeccc9320f967b694ecc764ad574d9d2e4ecc04c196dcecf337cca3d7f/kaos_core-0.1.0-py3-none-any.whl", hash = "sha256:1f6ef9862a3ff5136d485289a5c8ff6af30e7006a8ad14508bc0ff4ec3fac391", size = 151339, upload-time = "2026-05-20T23:04:16.199Z" },
 ]
 
 [[package]]
 name = "kaos-llm-client"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx", extra = ["http2"] },
@@ -516,14 +516,14 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/bf/c494461ab335cd94479bb0d67b885985bce6388bab67f352acabbb609743/kaos_llm_client-0.1.0rc1.tar.gz", hash = "sha256:239df9da79c651308472e0c875623657d13496d2591405a95d008141e98261dd", size = 241075, upload-time = "2026-05-20T20:13:29.284Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/60/25/cf78fb06668b9138b290d1153ff672976ec5840d6069ab096ce1e2719540/kaos_llm_client-0.1.0.tar.gz", hash = "sha256:8f57aa311cf78d2d58db822fc75c44e6cb06dc4cbbdab7e71f8050b84fd363df", size = 241184, upload-time = "2026-05-20T23:22:16.269Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/0b/404da9088759578e3761eff81ef5f1cfc7a91cff3c6b7db88e7bc1cbf9c0/kaos_llm_client-0.1.0rc1-py3-none-any.whl", hash = "sha256:567cce46b8bc4f016aa27b26f1440bf3dad275b2e06f1745d9636afaaba5ef30", size = 152268, upload-time = "2026-05-20T20:13:27.563Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/8a/2b99334c2dcf21f2ea109c0c5ebc8f637460726bec5e00cbba5213a34d2b/kaos_llm_client-0.1.0-py3-none-any.whl", hash = "sha256:33627552e8a316e215d0ecdf4f05a4a4590d0cbfad266541f93778cec6450cb4", size = 152225, upload-time = "2026-05-20T23:22:14.375Z" },
 ]
 
 [[package]]
 name = "kaos-llm-core"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "kaos-content" },
@@ -532,14 +532,14 @@ dependencies = [
     { name = "kaos-nlp-core" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b5/96/d86f92b5058e36861ab48219a1bc2c016c91362c177788cb7294d58eb9c7/kaos_llm_core-0.1.0rc1.tar.gz", hash = "sha256:5e8b11be5dd28ca184eef21053a0d65c688ccd6fa3d6803362b467379dfc7b19", size = 697922, upload-time = "2026-05-20T21:31:40.487Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3a/57/a5a73bf6956af26f83a8adfbab95e3b9088c700b0b5e45d4083c2e30b68b/kaos_llm_core-0.1.0.tar.gz", hash = "sha256:d6505f390e5a08feade366916250e5ea54e22b11fc4e0b5b5c41a962f215307b", size = 697936, upload-time = "2026-05-21T00:14:27.247Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9a/86/8168d31df731b1af33c2ff2c521983664f685dad3df1a64ad75298044af9/kaos_llm_core-0.1.0rc1-py3-none-any.whl", hash = "sha256:7b99e2c052028fd2f5c1da96c68c94b4006a03a2665b6ff6dec35dac0c9876be", size = 555729, upload-time = "2026-05-20T21:31:38.731Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/cd/aa35c0d9529665859a5b0db845b55c2ad82db0a3551bf1fd1028aad0b2a8/kaos_llm_core-0.1.0-py3-none-any.whl", hash = "sha256:1124e42b20e94936d07c2263ecd685b20000761f8be56eb027201f20a4a0a7fd", size = 555686, upload-time = "2026-05-21T00:14:25.13Z" },
 ]
 
 [[package]]
 name = "kaos-mcp"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -550,9 +550,9 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "starlette" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/8c/f7466d974a38006aee7369d5590d996580efbcc04ddf42c110eeb38eb795/kaos_mcp-0.1.0rc1.tar.gz", hash = "sha256:79e95c171aeab898e0e41c667b43cd50273a86f122f1cb8280fa44a8923fd545", size = 47105, upload-time = "2026-05-20T22:09:10.652Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/3f/bacaab55b64b36142a2d42913d105c7a27ebb028f25626fd09b5ad10550f/kaos_mcp-0.1.0.tar.gz", hash = "sha256:e2d40934509f1c3b8cf71f9d1d639e00a0c746a559ed5f812fab57de07ed2673", size = 47166, upload-time = "2026-05-21T00:14:36.153Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/f4/8ceea6a2d98619770dcff703d2ffa6225c8fa57ca673147ec52df70b5909/kaos_mcp-0.1.0rc1-py3-none-any.whl", hash = "sha256:2b35cbe128b9c4e63aca347b827287ee3dd9fee2a51ddda30a8540d146f7aac4", size = 52382, upload-time = "2026-05-20T22:09:08.977Z" },
+    { url = "https://files.pythonhosted.org/packages/75/73/89ab3e5f64173a4d064681b712e9345436226907896c3a845b7c07676f27/kaos_mcp-0.1.0-py3-none-any.whl", hash = "sha256:82d75a70a7fc5b99c33ac10ee6decd58a7fe0d7bc660a0e334d63e9799fe3de5", size = 52333, upload-time = "2026-05-21T00:14:34.906Z" },
 ]
 
 [[package]]
@@ -595,12 +595,12 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "joblib", specifier = ">=1.3" },
-    { name = "kaos-content", specifier = ">=0.1.0rc1,<0.2" },
-    { name = "kaos-core", specifier = ">=0.1.0rc1,<0.2" },
-    { name = "kaos-llm-core", marker = "extra == 'llm'", specifier = ">=0.1.0rc1,<0.2" },
-    { name = "kaos-mcp", marker = "extra == 'mcp'", specifier = ">=0.1.0rc1,<0.2" },
-    { name = "kaos-nlp-core", specifier = ">=0.1.0rc1,<0.2" },
-    { name = "kaos-nlp-transformers", marker = "extra == 'transformers'", specifier = ">=0.1.0rc1,<0.2" },
+    { name = "kaos-content", specifier = ">=0.1.0,<0.2" },
+    { name = "kaos-core", specifier = ">=0.1.0,<0.2" },
+    { name = "kaos-llm-core", marker = "extra == 'llm'", specifier = ">=0.1.0,<0.2" },
+    { name = "kaos-mcp", marker = "extra == 'mcp'", specifier = ">=0.1.0,<0.2" },
+    { name = "kaos-nlp-core", specifier = ">=0.1.0,<0.2" },
+    { name = "kaos-nlp-transformers", marker = "extra == 'transformers'", specifier = ">=0.1.0,<0.2" },
     { name = "numpy", specifier = ">=2.1" },
     { name = "scikit-learn", specifier = ">=1.8" },
     { name = "scipy", specifier = ">=1.14.1" },
@@ -609,7 +609,7 @@ provides-extras = ["llm", "mcp", "transformers"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "kaos-pdf", specifier = ">=0.1.0rc1,<0.2" },
+    { name = "kaos-pdf", specifier = ">=0.1.0,<0.2" },
     { name = "markdown-it-py", extras = ["plugins"], specifier = ">=3.0" },
     { name = "maturin", specifier = ">=1.12.6" },
     { name = "pytest", specifier = ">=9.0.3" },
@@ -622,23 +622,23 @@ dev = [
 
 [[package]]
 name = "kaos-nlp-core"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/a0/0e8a2d2cfd18e0bb8b1f64dbbabb2a3991b8626039a82c1133d98829f9d7/kaos_nlp_core-0.1.0rc1.tar.gz", hash = "sha256:9f435defc7912fbad6e5c5471ec30619df63a1f7ff0aaaf169ba0a31e867985b", size = 59004701, upload-time = "2026-05-20T20:36:50.161Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/47/9c19a8799499e05ab80751211c295d726947d5b443a2b9df2abc00c47a91/kaos_nlp_core-0.1.0.tar.gz", hash = "sha256:725887dafb7afff62daff5e4832d51d700291556415229806fdac5fd79448b1c", size = 59004823, upload-time = "2026-05-20T23:35:57.81Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/a7/162f5212cebef60fff8df1696ded3e83d64998cbfcbf5dd5316246f7c28b/kaos_nlp_core-0.1.0rc1-cp313-abi3-macosx_11_0_arm64.whl", hash = "sha256:8ff9254d4c5ebdbf27e25ccc286bc92069feed0430a0ad48487309963ffebd24", size = 49181302, upload-time = "2026-05-20T20:36:27.129Z" },
-    { url = "https://files.pythonhosted.org/packages/b8/2c/6e0ddfc934b42ed6e10191621d2183dfafa9c0e9796e479528a6a8e9fbe4/kaos_nlp_core-0.1.0rc1-cp313-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:55ffa84f4891de5b108bc98f5c7d0a3453a536b296aad90956d20f51533a2554", size = 49055553, upload-time = "2026-05-20T20:36:31.091Z" },
-    { url = "https://files.pythonhosted.org/packages/2d/9d/4b4ac03e80fde90dbc6a3c8c24c01457efe25ad54ca3eb951a3392d2ddc4/kaos_nlp_core-0.1.0rc1-cp313-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:f9a71defa8c21ec10bb187f19c6ca140e57995a8fc7ca65b6d54991ff91745ab", size = 49734205, upload-time = "2026-05-20T20:36:34.722Z" },
-    { url = "https://files.pythonhosted.org/packages/d4/03/e24da25c7e37224c9fd364c5d4a236fdb9a665befb379504df44f47948a7/kaos_nlp_core-0.1.0rc1-cp313-abi3-win_amd64.whl", hash = "sha256:868095d7b97930c7c2745eb838deaa9136768909c1da1cc8efdbee96d3f9b108", size = 48967000, upload-time = "2026-05-20T20:36:38.126Z" },
-    { url = "https://files.pythonhosted.org/packages/76/04/4f0ed20754829d56b42299532078581e9a228657be42eaaa1931a5b33848/kaos_nlp_core-0.1.0rc1-cp313-abi3-win_arm64.whl", hash = "sha256:5ed382cf3b088d49cec1bda801d69cc6ead5a8484160ec88b5d17d943407d763", size = 48759015, upload-time = "2026-05-20T20:36:41.608Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/2b/1f0f6f4cd4438b2340d0d4dff1a84dd33d972c40210ed7e38930aac3e6b6/kaos_nlp_core-0.1.0-cp313-abi3-macosx_11_0_arm64.whl", hash = "sha256:0ba8291c265413b55d4bfd009a4c22c17806be01bc58e70dc93f6859cfdad887", size = 49182219, upload-time = "2026-05-20T23:35:39.4Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/8b/198fa3657fc189c33eb185bf84ffb5b18420cfe4000aabdb06adb387d05e/kaos_nlp_core-0.1.0-cp313-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:b89bd13f00147ad3f4a332a112611d9a79dd6b3e63d621f6afc2abb2704a84a6", size = 49056097, upload-time = "2026-05-20T23:35:42.921Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/ca/84a77c4b4017d51c76243420622395b9fe69b3e027de3da2f015830f9d6f/kaos_nlp_core-0.1.0-cp313-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:c4909a473b2ee4e42deacd1abc234f053d5f78a19784cca373a038f2c509cb2b", size = 49732962, upload-time = "2026-05-20T23:35:46.745Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/b6/2085a8b04491f6f3b1f7c92b361fac9d9f7ad1fb75e7d65d05ecf3963bb9/kaos_nlp_core-0.1.0-cp313-abi3-win_amd64.whl", hash = "sha256:7c89e7195c40096a87cfa531257040cb902d71a16e4052dc7fc39cc97cc58c37", size = 48966737, upload-time = "2026-05-20T23:35:50.089Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/1b/817b2b6f213591e683bb67f63c0405977d64cde7938b72c7b8a8691d8ca3/kaos_nlp_core-0.1.0-cp313-abi3-win_arm64.whl", hash = "sha256:b509e469e55c04de05667d2b18892961e3861f07a7c169e7aa53cfa75cfd1ab3", size = 48758629, upload-time = "2026-05-20T23:35:54.22Z" },
 ]
 
 [[package]]
 name = "kaos-nlp-transformers"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub" },
@@ -646,27 +646,27 @@ dependencies = [
     { name = "kaos-nlp-core" },
     { name = "numpy" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2b/e4/e71f32a912a2a2cc1d4594f7be67234d114b4c7ce5dfa2aac144d6a35b5b/kaos_nlp_transformers-0.1.0rc1.tar.gz", hash = "sha256:a69ce31571a760c238baf7676329806e9c35f9ec12dbf7f558e515ad8ad31c09", size = 28925256, upload-time = "2026-05-20T21:25:39.541Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/55/39/68590561d40f4e32b2c03f6b72d6245c854101421ab714b4363478665468/kaos_nlp_transformers-0.1.0.tar.gz", hash = "sha256:e04a92acaa12d406aebc9ab0ef79534731739b6d16292e7255dccc97d5bbdd93", size = 28925278, upload-time = "2026-05-20T23:57:41.452Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/48/5b3bcb2836a63cb8da52da885c4d994238e72bbeceefeefd6ca71ea5fc85/kaos_nlp_transformers-0.1.0rc1-cp313-abi3-macosx_11_0_arm64.whl", hash = "sha256:754ececd046faf70a82301ff2750a4d12254c7fe5d9837e8c5ad1a0430b67970", size = 37349888, upload-time = "2026-05-20T21:25:23.215Z" },
-    { url = "https://files.pythonhosted.org/packages/d2/71/941da3d54a47e2dab36d1c87eda2e426e7cbf245115a1a737f77ee1f6ae4/kaos_nlp_transformers-0.1.0rc1-cp313-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:df7ca05f2f30f080ccebf9799037c293fbec85180ab2e1598252870fc6060290", size = 39523577, upload-time = "2026-05-20T21:25:26.806Z" },
-    { url = "https://files.pythonhosted.org/packages/a3/0b/cae5452a4a61ba1eab477abc4ddceb2e76457f55e8f9bda91fcbf4c1ef8c/kaos_nlp_transformers-0.1.0rc1-cp313-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:3a3aa7c9dee1c34cd851176886ade422a4b43d20ab90541a67d66074c2d0420a", size = 38644639, upload-time = "2026-05-20T21:25:29.838Z" },
-    { url = "https://files.pythonhosted.org/packages/8b/af/84b46e1ac13f6c5e843763ac257ad3f8c83241d77f95ff223a8a64578821/kaos_nlp_transformers-0.1.0rc1-cp313-abi3-win_amd64.whl", hash = "sha256:1d2f0f88d909760a90a34289a7a50c0839bef29a458b435a41b44e177c141ea8", size = 37819324, upload-time = "2026-05-20T21:25:32.681Z" },
-    { url = "https://files.pythonhosted.org/packages/53/0d/a31eae790ccbb5be71c42ed31a33f4554c965b7f87e5853a4aa9c03093df/kaos_nlp_transformers-0.1.0rc1-cp313-abi3-win_arm64.whl", hash = "sha256:70e2181a41242c2bf3fe805c23e65541a0d505ba447b54433267cd44b6a7efcd", size = 37338245, upload-time = "2026-05-20T21:25:36.945Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/eb/5fa7df1dff6155a81075e6ac8b3832ebc0be2e07c230b58e81759c7ba448/kaos_nlp_transformers-0.1.0-cp313-abi3-macosx_11_0_arm64.whl", hash = "sha256:70279a0543270777a288a19184ecfdfb4780ede89c7160799c9eb2c5b8eebc4e", size = 37349290, upload-time = "2026-05-20T23:57:16.219Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/59/98284e9d976054390f0a905214b715ad85720aa67c83cf21a926158e8d47/kaos_nlp_transformers-0.1.0-cp313-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:b549c6f6bbc651a5c8005ad6928db50b82454d878e404c3227cbd0a65e933b6b", size = 39523747, upload-time = "2026-05-20T23:57:20.236Z" },
+    { url = "https://files.pythonhosted.org/packages/17/3b/bd4644626877c2dcb0ee4794a962cbdf9caf71f855de2291228892d91dae/kaos_nlp_transformers-0.1.0-cp313-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:cf35cb1a94bc6b76db3d2d399c6c0da9e684e8601c67c27f57455a79f476cb81", size = 38644603, upload-time = "2026-05-20T23:57:25.455Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/79/b1c13a6267c65b6d6db6ca060a4332ba6a8afdfe2354ddb2a86aaf7df374/kaos_nlp_transformers-0.1.0-cp313-abi3-win_amd64.whl", hash = "sha256:90dd23825bf6ca5aae83bf939be387a3c335c033b4ed2c5e739288e4af557e6c", size = 37818830, upload-time = "2026-05-20T23:57:29.179Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/03/9d20e1c851d6f9ccf3cc56287bc4dbb0650ee7f620a34e94e26f493542ed/kaos_nlp_transformers-0.1.0-cp313-abi3-win_arm64.whl", hash = "sha256:dd5a9770dc96d95d12436d6d5974bace59b67fbcd92bc375b91e1fda7cba21b5", size = 37338914, upload-time = "2026-05-20T23:57:33.628Z" },
 ]
 
 [[package]]
 name = "kaos-pdf"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "kaos-content", extra = ["images", "layout", "markdown"] },
     { name = "kaos-core" },
     { name = "pypdfium2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d7/68/4a12b634d73acb7ec222333a47aa214c49a95058e21f1816e29c8fcee46e/kaos_pdf-0.1.0rc1.tar.gz", hash = "sha256:fea054c21e44f3ce7a51b17cb5187fc164c494d22d6abf6c2b273007f8074544", size = 67928, upload-time = "2026-05-20T22:12:00.628Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/8c/a34867b33cd0e3fc0d0afa86fca85330fd51e17bcba51ca2597b690ae9ed/kaos_pdf-0.1.0.tar.gz", hash = "sha256:f7d993c08a0c7130945c180fd808c9d6414b5cc6b630c85d018eb9b9c1a90c50", size = 67974, upload-time = "2026-05-21T00:14:38.527Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/90/e209507afd878ab17b585b3373a8eb85c711e65dbd3b128fa0cb973e6e52/kaos_pdf-0.1.0rc1-py3-none-any.whl", hash = "sha256:21737b3a7c97bc170c061cc69f19181f6f70af472585034930cef63418a97ea3", size = 69866, upload-time = "2026-05-20T22:11:59.139Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/83/2f6849d2e2466321047883ce3239dc5fc07b22af7c2deae3e58a3a0497af/kaos_pdf-0.1.0-py3-none-any.whl", hash = "sha256:053e3a5f7e9c1f708910e4e8fa3232d10f5e51068fe4759b9354dd1237ac947c", size = 69819, upload-time = "2026-05-21T00:14:36.956Z" },
 ]
 
 [[package]]
