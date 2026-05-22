@@ -32,7 +32,7 @@ in the rest of the pipeline — `[transformers]` for fastembed-backed
 featurization, `[llm]` for LLM-driven cold-start labeling, and `[mcp]`
 for the MCP tool surface.
 
-The Rust crate is intentionally a stub in 0.1.0a1 — only a `version()`
+The Rust crate is intentionally a stub at 0.1.0 GA — only a `version()`
 smoke test, no hot path. v2.0+ phases land sparse-vectorizer and
 parallel-cosine kernels there as profiling warrants. We don't claim
 otherwise.
@@ -40,9 +40,9 @@ otherwise.
 ## Install
 
 ```bash
-uv add "kaos-ml-core[transformers,llm,mcp]"   # full pipeline
+uv add "kaos-ml-core[transformers,llm,mcp]>=0.1.0"   # full pipeline
 # or
-pip install "kaos-ml-core[transformers,llm,mcp]"
+pip install "kaos-ml-core[transformers,llm,mcp]>=0.1.0"
 ```
 
 `kaos-ml-core` requires Python **3.13** or newer. The published wheels
@@ -154,7 +154,7 @@ pipeline = Pipeline(
     classifier=clf,
     threshold=tuned.threshold,
     classes=("other", "arbitration"),
-    kaos_ml_core_version="0.1.0a1",
+    kaos_ml_core_version="0.1.0",
     train_metrics=metrics,
 )
 pipeline.save("/tmp/contracts-arbitration-v1.kaos")
@@ -201,9 +201,10 @@ for embeddings.
 
 ## CLI
 
-`kaos-ml-core` ships a stub `kaos-ml info` administrative CLI in 0.1.0a1.
-The `train` / `evaluate` / `predict` subcommands land in 0.1.0a2 (the
-Python API and MCP tool surface are the canonical entry points today).
+`kaos-ml-core` 0.1.0 GA ships a stub `kaos-ml info` administrative CLI.
+The `train` / `evaluate` / `predict` subcommands land in a later minor
+release (the Python API and MCP tool surface are the canonical entry
+points today).
 
 ```bash
 kaos-ml info --json    # version + settings + Rust extension status
@@ -264,10 +265,18 @@ question:
 |---|---|
 | **Python** | 3.13, 3.14 (informational matrix entries for 3.14t free-threaded and 3.15-dev). One `cp313-abi3` wheel per OS/arch covers all 3.13+ minors. |
 | **OS** | Linux (manylinux + musllinux, x86_64 + aarch64), macOS arm64, Windows x86_64, Windows arm64. macOS x86_64 deliberately skipped (Apple ended Intel sales in 2023). |
-| **Maturity** | Alpha. The public API is documented in `kaos_ml_core.__all__` (23 symbols). |
+| **Maturity** | 0.1.0 GA. The public API is documented in `kaos_ml_core.__all__` (23 symbols). |
 | **Stability policy** | Pre-1.0: minor bumps may change behaviour. Every change is documented in [`CHANGELOG.md`](CHANGELOG.md). |
 | **Test coverage** | 99 unit tests + integration tests (live LLM round-trip + real-PDF fixtures via kaos-pdf). |
 | **Type checker** | Validated with [`ty`](https://docs.astral.sh/ty/), Astral's Python type checker. |
+
+## Documentation
+
+Per-package reference: [`docs/`](docs/) in this repo.
+
+Cross-cutting KAOS guides (agentic patterns, persona presets, settings
+policy, citations, MCP data flow, migration to 0.1.0 GA) live in
+[`kaos-modules/docs/guides/`](https://github.com/273v/kaos-modules/tree/main/docs/guides).
 
 ## Companion packages
 
