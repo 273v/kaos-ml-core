@@ -69,6 +69,11 @@ try:
 except Exception:  # pragma: no cover - defensive: importlib.metadata always present on 3.13+
     from kaos_ml_core._rust import __version__
 
+# Imported AFTER ``__version__`` is bound: ``kaos_ml_core.tools`` reads
+# ``__version__`` from this module at import time, so an earlier import
+# here would trigger a circular import (audit-04/kaos-ml-core.md §23-D).
+from kaos_ml_core.tools import register_ml_tools
+
 __all__ = [
     "Corpus",
     "CorpusError",
@@ -89,6 +94,7 @@ __all__ = [
     "__version__",
     "aggregate_predictions",
     "evaluate",
+    "register_ml_tools",
     "rust_version",
     "stratified_split",
     "tune_threshold",
