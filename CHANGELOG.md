@@ -5,16 +5,28 @@ All notable changes to `kaos-ml-core` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
+
 ## [Unreleased]
 
 ### Changed
 
-- `pyproject.toml` classifier bumped from `Development Status :: 3 - Alpha`
-  to `Development Status :: 5 - Production/Stable` to reflect the
-  0.1.0 GA release (WU-L #543) that froze the public API for the
-  0.1.x line. Closes audit-04/kaos-ml-core.md Family D (classifier drift).
+- **audit-04 §23-D `register_ml_tools` re-export.** Top-level
+  `kaos_ml_core.__all__` now includes `register_ml_tools` and the
+  callable is imported into the package namespace. Pre-fix, the
+  package docstring (`__init__.py:20`) and the README concept table
+  (`README.md:199`) both treated `register_ml_tools` as part of the
+  public surface, but the actual `__init__.py` did not re-export it —
+  callers had to know to `from kaos_ml_core.tools import
+  register_ml_tools`. The import is placed AFTER the `__version__`
+  bind block because `kaos_ml_core.tools` reads `__version__` from
+  this module at import time, and any earlier import would trigger a
+  circular import.
 
+### Tests
+
+- `tests/unit/test_register_ml_tools_reexport.py` — pins identity
+  (top-level IS `kaos_ml_core.tools.register_ml_tools`) plus
+  `__all__` membership so the regression cannot reopen silently.
 
 
 ## [0.1.0] — 2026-05-20
