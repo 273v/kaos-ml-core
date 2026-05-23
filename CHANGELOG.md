@@ -8,8 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-05-23
+
+audit-04 remediation: classifier bump (Family D) + `register_ml_tools`
+public re-export (§23-D).
+
 ### Changed
 
+- `pyproject.toml` classifier bumped from `Development Status :: 3 - Alpha`
+  to `Development Status :: 5 - Production/Stable` to reflect the
+  0.1.0 GA release (WU-L #543) that froze the public API for the
+  0.1.x line. Closes audit-04/kaos-ml-core.md Family D (classifier drift).
 - **audit-04 §23-D `register_ml_tools` re-export.** Top-level
   `kaos_ml_core.__all__` now includes `register_ml_tools` and the
   callable is imported into the package namespace. Pre-fix, the
