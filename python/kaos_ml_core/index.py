@@ -321,7 +321,7 @@ class CorpusIndex:
 
                 np.save(out / _DENSE_FILENAME, matrix)
                 dense_shape = (int(matrix.shape[0]), int(matrix.shape[1]))
-                logger.info(
+                logger.debug(
                     "CorpusIndex.save: wrote dense matrix shape=%s for model=%r",
                     dense_shape,
                     embed_model,
