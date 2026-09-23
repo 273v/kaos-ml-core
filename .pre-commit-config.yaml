@@ -33,7 +33,7 @@ repos:
   # Pinned to match the dev group in pyproject.toml to avoid drift between
   # local hooks and `uv sync --group dev`.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.16.7
     hooks:
       - id: ruff-format
         files: ^(python/kaos_ml_core|tests)/.*\.py$
