@@ -8,11 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] — 2026-09-23
+
 ### Fixed
 
 - `[mcp]` extra now requires `kaos-mcp>=0.1.5`. Older kaos-mcp releases
   leave `mcp` unbounded, so a fresh install could resolve mcp 2.x, which
   removed `mcp.server.fastmcp` and made `import kaos_mcp` fail.
+
+### Changed
+
+- pyo3 0.29.2 and a Python lock refresh (pillow 12.3.0 security fix,
+  scipy 1.18.1 with Python 3.15 wheels).
 
 ## [0.1.3] - 2026-06-23
 
