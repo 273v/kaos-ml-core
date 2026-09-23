@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Fixed
+
+- `[mcp]` extra now requires `kaos-mcp>=0.1.5`. Older kaos-mcp releases
+  leave `mcp` unbounded, so a fresh install could resolve mcp 2.x, which
+  removed `mcp.server.fastmcp` and made `import kaos_mcp` fail.
+
 ## [0.1.3] - 2026-06-23
 
 ## [0.1.2] — 2026-05-25

@@ -74,7 +74,7 @@ transformers = ["kaos-nlp-transformers>=0.1.0,<0.2"]
 llm = ["kaos-llm-core>=0.1.0,<0.2"]
 # MCP tool surface — register_ml_tools(runtime). Required to expose the
 # 11 MCP tools to an agent.
-mcp = ["kaos-mcp>=0.1.0,<0.2"]
+mcp = ["kaos-mcp>=0.1.5,<0.2"]
 
 [project.scripts]
 kaos-ml = "kaos_ml_core.cli:main"
