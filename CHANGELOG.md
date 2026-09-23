@@ -8,13 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.4] — 2026-09-23
-
 ### Fixed
 
 - `[build-system]` now requires `maturin>=1.8.2`. maturin 1.8.0 and 1.8.1
   cannot parse the PEP 639 `license-files` list, so an sdist build that
   resolved them failed.
+
+## [0.1.4] — 2026-09-23
+
+### Fixed
+
 - `[mcp]` extra now requires `kaos-mcp>=0.1.5`. Older kaos-mcp releases
   leave `mcp` unbounded, so a fresh install could resolve mcp 2.x, which
   removed `mcp.server.fastmcp` and made `import kaos_mcp` fail.
